@@ -23,7 +23,5 @@ func FindAllHandler(logger *slog.Logger, userService *services.UserService) http
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
-		w.WriteHeader(http.StatusOK)
 	}
 }

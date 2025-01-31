@@ -24,7 +24,7 @@ func (u *UserRepo) CreateOne(firstName, lastName, email string) error {
 }
 
 func (r *UserRepo) FindAll() ([]models.User, error) {
-	rows, err := r.db.Query(`SELECT first_name, last_name, email FROM users;`)
+	rows, err := r.db.Query(`SELECT id, first_name, last_name, email FROM users;`)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *UserRepo) FindAll() ([]models.User, error) {
 
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.FirstName, &u.LastName, &u.Email); err != nil {
+		if err := rows.Scan(&u.Id, &u.FirstName, &u.LastName, &u.Email); err != nil {
 			return nil, err
 		}
 		users = append(users, u)

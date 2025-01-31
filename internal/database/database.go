@@ -9,7 +9,7 @@ import (
 func InitDBTables(ctx context.Context, db *sql.DB) error {
 	_, err := db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS users (
-			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			id         TEXT PRIMARY KEY,
 			first_name VARCHAR(255) NOT NULL,
 			last_name  VARCHAR(255) NOT NULL,
 			email      VARCHAR(255) NOT NULL UNIQUE,
@@ -22,9 +22,8 @@ func InitDBTables(ctx context.Context, db *sql.DB) error {
 
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS vaults (
-			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			id          TEXT PRIMARY KEY,
 			name        VARCHAR(255) NOT NULL,
-			description TEXT,
 			created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
@@ -34,8 +33,8 @@ func InitDBTables(ctx context.Context, db *sql.DB) error {
 
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS user_vaults (
-			user_id     INTEGER NOT NULL,
-			vault_id    INTEGER NOT NULL,
+			user_id     TEXT NOT NULL,
+			vault_id    TEXT NOT NULL,
 			role        VARCHAR(255) NOT NULL,
 			created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (user_id, vault_id),
@@ -49,11 +48,11 @@ func InitDBTables(ctx context.Context, db *sql.DB) error {
 
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS expense_categories (
-			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			id         TEXT PRIMARY KEY,
 			name       VARCHAR(255) NOT NULL UNIQUE,
 			priority   INTEGER NOT NULL,
-			vault_id   INTEGER NOT NULL,
-			created_by INTEGER NOT NULL,
+			vault_id   TEXT NOT NULL,
+			created_by TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
 			FOREIGN KEY (created_by) REFERENCES users(id)
@@ -65,14 +64,14 @@ func InitDBTables(ctx context.Context, db *sql.DB) error {
 
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS expenses (
-			id             INTEGER PRIMARY KEY AUTOINCREMENT,
+			id             TEXT PRIMARY KEY,
 			name           TEXT NOT NULL,
 			date           TEXT NOT NULL,
-			category_id    INTEGER NOT NULL,
+			category_id    TEXT NOT NULL,
 			amount         REAL NOT NULL,
 			payment_method TEXT NOT NULL,
-			vault_id       INTEGER NOT NULL,
-			created_by     INTEGER NOT NULL,
+			vault_id       TEXT NOT NULL,
+			created_by     TEXT NOT NULL,
 			created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
 			FOREIGN KEY (created_by) REFERENCES users(id),

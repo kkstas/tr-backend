@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/kkstas/tnr-backend/internal/models"
 )
 
@@ -16,7 +18,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 }
 
 func (u *UserRepo) CreateOne(firstName, lastName, email string) error {
-	_, err := u.db.Exec(`INSERT INTO users(first_name, last_name, email) VALUES ($1, $2, $3);`, firstName, lastName, email)
+	_, err := u.db.Exec(`INSERT INTO users(id, first_name, last_name, email) VALUES ($1, $2, $3, $4);`, uuid.New().String(), firstName, lastName, email)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}

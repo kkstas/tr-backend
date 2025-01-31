@@ -21,14 +21,11 @@ import (
 func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *sql.DB) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
-	db, dbName := openTestDB(t)
+	db, cleanupDb := openTestDB(t)
 
 	cleanup = func() {
-		db.Close()
+		cleanupDb()
 		cancel()
-		if err := os.Remove(dbName); err != nil {
-			t.Fatalf("failed to remove test database file %s: %v", dbName, err)
-		}
 	}
 
 	newApp, err := app.NewApplication(ctx, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
@@ -39,14 +36,21 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *
 	return newApp, cleanup, db
 }
 
-func openTestDB(t testing.TB) (*sql.DB, string) {
+func openTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
 	dbName := fmt.Sprintf("%s.db", RandomString(32))
 	db, err := sql.Open("sqlite", dbName+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {
 		t.Fatalf("failed to open sql db: %v", err)
 	}
 
-	return db, dbName
+	cleanup = func() {
+		db.Close()
+		if err := os.Remove(dbName); err != nil {
+			t.Fatalf("failed to remove test database file %s: %v", dbName, err)
+		}
+	}
+
+	return db, cleanup
 }
 
 func RandomString(length int) string {

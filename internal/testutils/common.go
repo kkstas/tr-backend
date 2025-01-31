@@ -15,32 +15,35 @@ import (
 	"time"
 
 	"github.com/kkstas/tnr-backend/internal/app"
+	"github.com/kkstas/tnr-backend/internal/database"
 	_ "modernc.org/sqlite"
 )
 
 func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *sql.DB) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
-	db, cleanupDb := openTestDB(t)
+	db, cleanupDb := OpenTestDB(t)
 
 	cleanup = func() {
 		cleanupDb()
 		cancel()
 	}
 
-	newApp, err := app.NewApplication(ctx, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
-	if err != nil {
-		t.Fatalf("failed to create new application: %v", err)
-	}
+	newApp = app.NewApplication(ctx, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
 	return newApp, cleanup, db
 }
 
-func openTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
+func OpenTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
 	dbName := fmt.Sprintf("%s.db", RandomString(32))
 	db, err := sql.Open("sqlite", dbName+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {
 		t.Fatalf("failed to open sql db: %v", err)
+	}
+
+	err = database.InitDBTables(context.TODO(), db)
+	if err != nil {
+		t.Fatalf("failed to init db tables: %v", err)
 	}
 
 	cleanup = func() {
@@ -91,5 +94,14 @@ func AssertEqual[T comparable](t testing.TB, got, want T) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func AssertValidDate(t testing.TB, dateStr string) {
+	t.Helper()
+	layout := "2006-01-02T15:04:05Z"
+	_, err := time.Parse(layout, dateStr)
+	if err != nil {
+		t.Errorf("string %s is not valid date in format %s: %v", dateStr, layout, err)
 	}
 }

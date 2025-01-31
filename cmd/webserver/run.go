@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/kkstas/tnr-backend/internal/app"
+	"github.com/kkstas/tnr-backend/internal/database"
 	_ "modernc.org/sqlite"
 )
 
@@ -21,14 +22,15 @@ func run(ctx context.Context) error {
 
 	db, err := openDB()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open db: %w", err)
 	}
 	defer db.Close()
-
-	app, err := app.NewApplication(ctx, db, initLogger(os.Stdout))
+	err = database.InitDBTables(ctx, db)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to init db tables: %w", err)
 	}
+
+	app := app.NewApplication(ctx, db, initLogger(os.Stdout))
 
 	server := &http.Server{
 		Addr:              ":8000",

@@ -11,6 +11,7 @@ import (
 )
 
 func TestCreateAndFindAllUsers(t *testing.T) {
+	ctx := context.Background()
 	db, cleanup := testutils.OpenTestDB(t)
 	defer cleanup()
 	userRepo := repositories.NewUserRepo(db)
@@ -19,12 +20,12 @@ func TestCreateAndFindAllUsers(t *testing.T) {
 	lastName := "Doe"
 	email := "john.doe@email.com"
 
-	err := userRepo.CreateOne(context.Background(), firstName, lastName, email)
+	err := userRepo.CreateOne(ctx, firstName, lastName, email)
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}
 
-	foundUsers, err := userRepo.FindAll(context.Background())
+	foundUsers, err := userRepo.FindAll(ctx)
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}

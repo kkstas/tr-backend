@@ -21,8 +21,10 @@ func NewApplication(ctx context.Context, db *sql.DB, logger *slog.Logger) *Appli
 
 	userRepo := repositories.NewUserRepo(db)
 	userService := services.NewUserService(userRepo)
+	vaultRepo := repositories.NewVaultRepo(db)
+	vaultService := services.NewVaultService(vaultRepo)
 
-	mux := handlers.SetupRoutes(logger, db, userService)
+	mux := handlers.SetupRoutes(logger, db, userService, vaultService)
 
 	app.Handler = middleware.LogHttp(logger, mux)
 

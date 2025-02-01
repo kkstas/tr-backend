@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +17,7 @@ func TestFindAllUsers(t *testing.T) {
 		serv, cleanup, db := testutils.NewTestApplication(t)
 		defer cleanup()
 
-		err := repositories.NewUserRepo(db).CreateOne("John", "Doe", "john@doe.com")
+		err := repositories.NewUserRepo(db).CreateOne(context.Background(), "John", "Doe", "john@doe.com")
 		if err != nil {
 			t.Fatalf("failed to create new user in repo: %v", err)
 		}

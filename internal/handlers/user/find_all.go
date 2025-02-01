@@ -10,7 +10,7 @@ import (
 
 func FindAllHandler(logger *slog.Logger, userService *services.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		foundUsers, err := userService.FindAll()
+		foundUsers, err := userService.FindAll(r.Context())
 		if err != nil {
 			logger.Error("err while finding all users", "error", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)

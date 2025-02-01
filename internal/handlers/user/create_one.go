@@ -40,7 +40,7 @@ func CreateOneHandler(logger *slog.Logger, userService *services.UserService) ht
 			return
 		}
 
-		err = userService.CreateOne(body.FirstName, body.LastName, body.Email)
+		err = userService.CreateOne(r.Context(), body.FirstName, body.LastName, body.Email)
 		if err != nil {
 			logger.Error("failed to create new user", "error", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)

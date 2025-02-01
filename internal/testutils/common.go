@@ -41,7 +41,7 @@ func OpenTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
 		t.Fatalf("failed to open sql db: %v", err)
 	}
 
-	err = database.InitDBTables(context.TODO(), db)
+	err = database.InitDBTables(context.Background(), db)
 	if err != nil {
 		t.Fatalf("failed to init db tables: %v", err)
 	}

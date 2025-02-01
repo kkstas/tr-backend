@@ -17,6 +17,7 @@ func SetupRoutes(logger *slog.Logger, db *sql.DB, userService *services.UserServ
 	mux.HandleFunc("/", misc.NotFoundHandler)
 
 	mux.HandleFunc("GET /users", user.FindAllHandler(logger, userService))
+	mux.HandleFunc("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
 	mux.HandleFunc("POST /users", user.CreateOneHandler(logger, userService))
 
 	return mux

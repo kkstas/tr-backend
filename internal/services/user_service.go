@@ -22,3 +22,7 @@ func (s *UserService) FindAll(ctx context.Context) ([]models.User, error) {
 func (s *UserService) CreateOne(ctx context.Context, firstName string, lastName string, email string) error {
 	return s.userRepo.CreateOne(ctx, firstName, lastName, email)
 }
+
+func (s *UserService) FindOneByID(ctx context.Context, id string) (models.User, error) {
+	return s.userRepo.FindOneByID(ctx, id)
+}

@@ -42,7 +42,7 @@ func TestCreateOneUser(t *testing.T) {
 		testutils.AssertEqual(t, foundUsers[0].LastName, userFC.LastName)
 		testutils.AssertEqual(t, foundUsers[0].Email, userFC.Email)
 		testutils.AssertValidDate(t, foundUsers[0].CreatedAt)
-		if err := uuid.Validate(foundUsers[0].Id); err != nil {
+		if err := uuid.Validate(foundUsers[0].ID); err != nil {
 			t.Errorf("expected id to be valid uuid, got error: %v", err)
 		}
 

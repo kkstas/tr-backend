@@ -43,7 +43,7 @@ func (r *UserRepo) FindAll(ctx context.Context) ([]models.User, error) {
 
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.Id, &u.FirstName, &u.LastName, &u.Email, &u.CreatedAt); err != nil {
+		if err := rows.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Email, &u.CreatedAt); err != nil {
 			return nil, err
 		}
 		users = append(users, u)
@@ -55,14 +55,14 @@ func (r *UserRepo) FindAll(ctx context.Context) ([]models.User, error) {
 	return users, nil
 }
 
-func (r *UserRepo) FindOne(ctx context.Context, id string) (models.User, error) {
+func (r *UserRepo) FindOneByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
 	err := r.db.QueryRowContext(ctx, `
 			SELECT id, first_name, last_name, email, created_at
 			FROM users
 			WHERE users.id = $1;
 		`, id).
-		Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.CreatedAt)
+		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.CreatedAt)
 	if err != nil {
 		return models.User{}, err
 	}

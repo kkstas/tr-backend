@@ -34,7 +34,7 @@ func TestCreateAndFindAllUsers(t *testing.T) {
 	testutils.AssertEqual(t, foundUsers[0].LastName, lastName)
 	testutils.AssertEqual(t, foundUsers[0].Email, email)
 	testutils.AssertValidDate(t, foundUsers[0].CreatedAt)
-	if err := uuid.Validate(foundUsers[0].Id); err != nil {
+	if err := uuid.Validate(foundUsers[0].ID); err != nil {
 		t.Errorf("expected id to be valid uuid, got error: %v", err)
 	}
 }
@@ -59,7 +59,7 @@ func TestFindOneUser(t *testing.T) {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}
 
-	foundUser, err := userRepo.FindOne(ctx, foundUsers[0].Id)
+	foundUser, err := userRepo.FindOneByID(ctx, foundUsers[0].ID)
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestFindOneUser(t *testing.T) {
 	testutils.AssertEqual(t, foundUser.LastName, lastName)
 	testutils.AssertEqual(t, foundUser.Email, email)
 	testutils.AssertValidDate(t, foundUser.CreatedAt)
-	if err := uuid.Validate(foundUser.Id); err != nil {
+	if err := uuid.Validate(foundUser.ID); err != nil {
 		t.Errorf("expected id to be valid uuid, got error: %v", err)
 	}
 }

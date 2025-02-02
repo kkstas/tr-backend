@@ -123,3 +123,10 @@ func AssertNoError(t testing.TB, err error) {
 		t.Fatalf("got an error but didn't expect one: %v", err)
 	}
 }
+
+func AssertNotEmpty(t testing.TB, got string) {
+	t.Helper()
+	if len(got) == 0 {
+		t.Error("expected a non-empty string but didn't get one")
+	}
+}

@@ -1,25 +1,25 @@
 package user
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
 
 	"github.com/kkstas/tnr-backend/internal/services"
+	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
 func FindAllHandler(logger *slog.Logger, userService *services.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		foundUsers, err := userService.FindAll(r.Context())
 		if err != nil {
-			logger.Error("err while finding all users", "error", err.Error())
+			logger.Error("failed to find all users", "error", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(foundUsers)
+		err = utils.Encode(w, r, http.StatusOK, foundUsers)
 		if err != nil {
-			logger.Error("err while encoding found users", "error", err.Error())
+			logger.Error("failed to encode found users", "error", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

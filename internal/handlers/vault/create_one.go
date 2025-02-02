@@ -1,7 +1,6 @@
 package vault
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -18,10 +17,8 @@ func CreateOneHandler(logger *slog.Logger, vaultService *services.VaultService) 
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		var body reqBody
-		err := json.NewDecoder(r.Body).Decode(&body)
+		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			logger.Error("failed to decode request body", "error", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

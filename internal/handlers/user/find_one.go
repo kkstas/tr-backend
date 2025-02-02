@@ -1,13 +1,13 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/kkstas/tnr-backend/internal/services"
+	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
 func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) http.HandlerFunc {
@@ -25,9 +25,9 @@ func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) 
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(foundUser)
+		err = utils.Encode(w, r, http.StatusOK, foundUser)
 		if err != nil {
-			logger.Error("err while encoding found user", "error", err.Error())
+			logger.Error("failed to encode found user", "error", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

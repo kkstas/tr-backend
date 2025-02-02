@@ -1,12 +1,11 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 
-	"github.com/go-ozzo/ozzo-validation/v4"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
 	"github.com/kkstas/tnr-backend/internal/services"
@@ -22,9 +21,8 @@ func CreateOneHandler(logger *slog.Logger, userService *services.UserService) ht
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body reqBody
-		err := json.NewDecoder(r.Body).Decode(&body)
+		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			logger.Error("failed to decode request body", "error", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

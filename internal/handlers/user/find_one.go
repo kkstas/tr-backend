@@ -10,8 +10,8 @@ import (
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
-func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		if err := uuid.Validate(id); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -31,5 +31,5 @@ func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) 
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-	}
+	})
 }

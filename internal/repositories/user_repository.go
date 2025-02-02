@@ -18,15 +18,24 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 	return &UserRepo{db: db}
 }
 
-func (u *UserRepo) CreateOne(ctx context.Context, firstName, lastName, email string) error {
+func (u *UserRepo) CreateOne(ctx context.Context, firstName, lastName, email, passwordHash string) error {
 	_, err := u.db.ExecContext(ctx, `
-		INSERT INTO users(id, first_name, last_name, email)
-		VALUES ($1, $2, $3, $4);`,
-		uuid.New().String(), firstName, lastName, email)
+		INSERT INTO users(id, first_name, last_name, email, password_hash)
+		VALUES ($1, $2, $3, $4, $5);`,
+		uuid.New().String(), firstName, lastName, email, passwordHash)
 	if err != nil {
+		// TODO: handle unique constraint errors
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 	return nil
+}
+
+func (u *UserRepo) FindPasswordHashAndUserIDForEmail(ctx context.Context, email string) (passwordHash, userID string, err error) {
+	err = u.db.QueryRowContext(ctx, `SELECT u.id, u.password_hash FROM users u WHERE u.email = $1;`, email).Scan(&userID, &passwordHash)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to find user password hash: %w", err)
+	}
+	return passwordHash, userID, nil
 }
 
 func (r *UserRepo) FindAll(ctx context.Context) ([]models.User, error) {

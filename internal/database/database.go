@@ -9,11 +9,12 @@ import (
 func InitDBTables(ctx context.Context, db *sql.DB) error {
 	_, err := db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS users (
-			id         TEXT PRIMARY KEY,
-			first_name VARCHAR(255) NOT NULL,
-			last_name  VARCHAR(255) NOT NULL,
-			email      VARCHAR(255) NOT NULL UNIQUE,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			id            TEXT PRIMARY KEY,
+			first_name    VARCHAR(255) NOT NULL,
+			last_name     VARCHAR(255) NOT NULL,
+			email         VARCHAR(255) NOT NULL UNIQUE,
+			password_hash VARCHAR(255) NOT NULL,
+			created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
 	if err != nil {

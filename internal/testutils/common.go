@@ -30,7 +30,16 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *
 		cancel()
 	}
 
-	newApp = app.NewApplication(ctx, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	getenv := func(k string) string {
+		switch k {
+		case "JWT_SECRET_KEY":
+			return "secret-key"
+		default:
+			return ""
+		}
+	}
+
+	newApp = app.NewApplication(ctx, getenv, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
 	return newApp, cleanup, db
 }
@@ -105,5 +114,12 @@ func AssertValidDate(t testing.TB, dateStr string) {
 	_, err := time.Parse(layout, dateStr)
 	if err != nil {
 		t.Errorf("string %s is not valid date in format %s: %v", dateStr, layout, err)
+	}
+}
+
+func AssertNoError(t testing.TB, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("got an error but didn't expect one: %v", err)
 	}
 }

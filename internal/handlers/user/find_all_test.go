@@ -18,7 +18,7 @@ func TestFindAllUsers(t *testing.T) {
 		serv, cleanup, db := testutils.NewTestApplication(t)
 		t.Cleanup(cleanup)
 
-		err := repositories.NewUserRepo(db).CreateOne(context.Background(), "John", "Doe", "john@doe.com")
+		err := repositories.NewUserRepo(db).CreateOne(context.Background(), "John", "Doe", "john@doe.com", "somepassword")
 		if err != nil {
 			t.Fatalf("failed to create new user in repo: %v", err)
 		}

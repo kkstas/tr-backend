@@ -33,5 +33,4 @@ func parseArgs(args []string) flags {
 		port:   *port,
 		dbname: *dbname,
 	}
-
 }

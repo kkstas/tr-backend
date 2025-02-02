@@ -8,8 +8,8 @@ import (
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
-func FindAllHandler(logger *slog.Logger, userService *services.UserService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func FindAllHandler(logger *slog.Logger, userService *services.UserService) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		foundUsers, err := userService.FindAll(r.Context())
 		if err != nil {
 			logger.Error("failed to find all users", "error", err.Error())
@@ -23,5 +23,5 @@ func FindAllHandler(logger *slog.Logger, userService *services.UserService) http
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-	}
+	})
 }

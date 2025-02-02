@@ -26,7 +26,7 @@ func TestFindOneUser(t *testing.T) {
 		lastName := "Doe"
 		email := "john@doe.com"
 
-		err := userRepo.CreateOne(ctx, firstName, lastName, email)
+		err := userRepo.CreateOne(ctx, firstName, lastName, email, "somepassword")
 		if err != nil {
 			t.Fatalf("failed to create new user in repo: %v", err)
 		}

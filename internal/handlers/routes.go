@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kkstas/tnr-backend/internal/handlers/misc"
+	"github.com/kkstas/tnr-backend/internal/handlers/session"
 	"github.com/kkstas/tnr-backend/internal/handlers/user"
 	"github.com/kkstas/tnr-backend/internal/handlers/vault"
 	"github.com/kkstas/tnr-backend/internal/services"
@@ -17,11 +18,13 @@ func SetupRoutes(logger *slog.Logger, db *sql.DB, userService *services.UserServ
 	mux.HandleFunc("GET /health-check", misc.HealthCheckHandler)
 	mux.HandleFunc("/", misc.NotFoundHandler)
 
-	mux.HandleFunc("GET /users", user.FindAllHandler(logger, userService))
-	mux.HandleFunc("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
-	mux.HandleFunc("POST /users", user.CreateOneHandler(logger, userService))
-	mux.HandleFunc("POST /vaults", vault.CreateOneHandler(logger, vaultService))
-	mux.HandleFunc("GET /vaults", vault.FindAllHandler(logger, vaultService))
+	mux.Handle("POST /login", session.LoginHandler(logger, userService))
+	mux.Handle("POST /register", session.RegisterHandler(logger, userService))
+
+	mux.Handle("GET /users", user.FindAllHandler(logger, userService))
+	mux.Handle("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
+	mux.Handle("POST /vaults", vault.CreateOneHandler(logger, vaultService))
+	mux.Handle("GET /vaults", vault.FindAllHandler(logger, vaultService))
 
 	return mux
 }

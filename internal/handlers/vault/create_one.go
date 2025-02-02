@@ -11,12 +11,12 @@ import (
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
-func CreateOneHandler(logger *slog.Logger, vaultService *services.VaultService) http.HandlerFunc {
+func CreateOneHandler(logger *slog.Logger, vaultService *services.VaultService) http.Handler {
 	type reqBody struct {
 		Name string `json:"name"`
 	}
 
-	return func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := utils.Decode[reqBody](r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -40,5 +40,5 @@ func CreateOneHandler(logger *slog.Logger, vaultService *services.VaultService) 
 		}
 
 		w.WriteHeader(http.StatusNoContent)
-	}
+	})
 }

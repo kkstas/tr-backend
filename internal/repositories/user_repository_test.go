@@ -21,7 +21,7 @@ func TestCreateAndFindAllUsers(t *testing.T) {
 	lastName := "Doe"
 	email := "john.doe@email.com"
 
-	err := userRepo.CreateOne(ctx, firstName, lastName, email)
+	err := userRepo.CreateOne(ctx, firstName, lastName, email, "somepassword")
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestFindOneUser(t *testing.T) {
 	lastName := "Doe"
 	email := "john.doe@email.com"
 
-	err := userRepo.CreateOne(ctx, firstName, lastName, email)
+	err := userRepo.CreateOne(ctx, firstName, lastName, email, "somepassword")
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one: %v", err)
 	}

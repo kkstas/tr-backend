@@ -8,8 +8,8 @@ import (
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
-func FindAllHandler(logger *slog.Logger, vaultService *services.VaultService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func FindAllHandler(logger *slog.Logger, vaultService *services.VaultService) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		foundVaults, err := vaultService.FindAll(r.Context())
 		if err != nil {
 			logger.Error("failed to find all vaults", "error", err.Error())
@@ -23,5 +23,5 @@ func FindAllHandler(logger *slog.Logger, vaultService *services.VaultService) ht
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-	}
+	})
 }

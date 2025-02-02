@@ -20,6 +20,10 @@ func run(ctx context.Context, args []string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
+	if err := validateEnvs(); err != nil {
+		return err
+	}
+
 	flags := parseArgs(args)
 
 	db, err := openDB(flags.dbname)
@@ -32,7 +36,7 @@ func run(ctx context.Context, args []string) error {
 		return fmt.Errorf("failed to init db tables: %w", err)
 	}
 
-	app := app.NewApplication(ctx, db, initLogger(os.Stdout))
+	app := app.NewApplication(ctx, os.Getenv, db, initLogger(os.Stdout))
 
 	server := &http.Server{
 		Addr:              ":" + flags.port,

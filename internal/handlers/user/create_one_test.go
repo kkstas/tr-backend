@@ -12,6 +12,7 @@ import (
 
 func TestCreateOneUser(t *testing.T) {
 	t.Run("returns status 204 & saves user in DB when created new user", func(t *testing.T) {
+		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
 		defer cleanup()
 

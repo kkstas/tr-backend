@@ -11,6 +11,7 @@ import (
 )
 
 func TestCreateAndFindAllUsers(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	db, cleanup := testutils.OpenTestDB(t)
 	defer cleanup()
@@ -41,6 +42,7 @@ func TestCreateAndFindAllUsers(t *testing.T) {
 }
 
 func TestFindOneUser(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	db, cleanup := testutils.OpenTestDB(t)
 	defer cleanup()

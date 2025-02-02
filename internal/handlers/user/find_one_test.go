@@ -15,6 +15,7 @@ import (
 
 func TestFindOneUser(t *testing.T) {
 	t.Run("returns status 200 & found user", func(t *testing.T) {
+		t.Parallel()
 		ctx := context.Background()
 		serv, cleanup, db := testutils.NewTestApplication(t)
 		defer cleanup()
@@ -55,6 +56,7 @@ func TestFindOneUser(t *testing.T) {
 	})
 
 	t.Run("returns status 400 if id is not valid uuid", func(t *testing.T) {
+		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
 		defer cleanup()
 
@@ -65,6 +67,7 @@ func TestFindOneUser(t *testing.T) {
 	})
 
 	t.Run("returns status 404 if no user is found", func(t *testing.T) {
+		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
 		defer cleanup()
 

@@ -14,6 +14,7 @@ import (
 
 func TestFindAllUsers(t *testing.T) {
 	t.Run("returns status 200 & array with users", func(t *testing.T) {
+		t.Parallel()
 		serv, cleanup, db := testutils.NewTestApplication(t)
 		defer cleanup()
 
@@ -38,6 +39,7 @@ func TestFindAllUsers(t *testing.T) {
 	})
 
 	t.Run("returns status 200 & empty array if no users are in db", func(t *testing.T) {
+		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
 		defer cleanup()
 

@@ -20,6 +20,7 @@ import (
 )
 
 func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *sql.DB) {
+	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
 	db, cleanupDb := OpenTestDB(t)
@@ -35,6 +36,7 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *
 }
 
 func OpenTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
+	t.Helper()
 	dbName := fmt.Sprintf("%s.db", RandomString(32))
 	db, err := sql.Open("sqlite", dbName+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {

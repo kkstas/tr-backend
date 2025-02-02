@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "build/tmp"
 
 [build]
-  args_bin = []
+  args_bin = ["-port","8000"]
   bin = "./build/tmp/main"
   cmd = "go build -o ./build/tmp/main ./cmd/webserver"
   exclude_dir = ["assets", "build", "tmp", "vendor", "docker"]

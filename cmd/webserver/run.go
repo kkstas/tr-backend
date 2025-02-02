@@ -16,11 +16,13 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func run(ctx context.Context) error {
+func run(ctx context.Context, args []string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	db, err := openDB()
+	flags := parseArgs(args)
+
+	db, err := openDB(flags.dbname)
 	if err != nil {
 		return fmt.Errorf("failed to open db: %w", err)
 	}
@@ -33,7 +35,7 @@ func run(ctx context.Context) error {
 	app := app.NewApplication(ctx, db, initLogger(os.Stdout))
 
 	server := &http.Server{
-		Addr:              ":8000",
+		Addr:              ":" + flags.port,
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           app,
 	}
@@ -45,8 +47,8 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func openDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite", "./database.db?_pragma=foreign_keys(1)&_time_format=sqlite")
+func openDB(dbname string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", dbname+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}

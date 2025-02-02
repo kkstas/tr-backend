@@ -16,7 +16,7 @@ func TestFindAllUsers(t *testing.T) {
 	t.Run("returns status 200 & array with users", func(t *testing.T) {
 		t.Parallel()
 		serv, cleanup, db := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		err := repositories.NewUserRepo(db).CreateOne(context.Background(), "John", "Doe", "john@doe.com")
 		if err != nil {
@@ -41,7 +41,7 @@ func TestFindAllUsers(t *testing.T) {
 	t.Run("returns status 200 & empty array if no users are in db", func(t *testing.T) {
 		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/users", nil)

@@ -18,7 +18,7 @@ func TestFindOneUser(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		serv, cleanup, db := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		userRepo := repositories.NewUserRepo(db)
 
@@ -58,7 +58,7 @@ func TestFindOneUser(t *testing.T) {
 	t.Run("returns status 400 if id is not valid uuid", func(t *testing.T) {
 		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/users/asdfasdf", nil)
@@ -69,7 +69,7 @@ func TestFindOneUser(t *testing.T) {
 	t.Run("returns status 404 if no user is found", func(t *testing.T) {
 		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/users/ff16bbc6-d671-4fc3-9ba6-7073122f715c", nil)

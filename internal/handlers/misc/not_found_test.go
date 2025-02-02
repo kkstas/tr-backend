@@ -11,7 +11,7 @@ import (
 func TestNotFound(t *testing.T) {
 	t.Parallel()
 	serv, cleanup, _ := testutils.NewTestApplication(t)
-	defer cleanup()
+	t.Cleanup(cleanup)
 
 	{
 		response := httptest.NewRecorder()

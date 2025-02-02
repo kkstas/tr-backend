@@ -13,7 +13,7 @@ import (
 func TestCreateAndFindAllVaults(t *testing.T) {
 	t.Parallel()
 	db, cleanup := testutils.OpenTestDB(t)
-	defer cleanup()
+	t.Cleanup(cleanup)
 	vaultRepo := repositories.NewVaultRepo(db)
 
 	name := "vault"

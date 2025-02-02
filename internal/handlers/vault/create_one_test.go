@@ -14,7 +14,7 @@ func TestCreateOneVault(t *testing.T) {
 	t.Run("returns status 204 & saves vault in DB when created new vault", func(t *testing.T) {
 		t.Parallel()
 		serv, cleanup, _ := testutils.NewTestApplication(t)
-		defer cleanup()
+		t.Cleanup(cleanup)
 
 		vaultFC := models.Vault{Name: "Doe"}
 

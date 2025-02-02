@@ -14,7 +14,7 @@ func TestCreateAndFindAllUsers(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	db, cleanup := testutils.OpenTestDB(t)
-	defer cleanup()
+	t.Cleanup(cleanup)
 	userRepo := repositories.NewUserRepo(db)
 
 	firstName := "John"
@@ -45,7 +45,7 @@ func TestFindOneUser(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	db, cleanup := testutils.OpenTestDB(t)
-	defer cleanup()
+	t.Cleanup(cleanup)
 	userRepo := repositories.NewUserRepo(db)
 
 	firstName := "John"

@@ -1,11 +1,13 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/kkstas/tnr-backend/internal/repositories"
 	"github.com/kkstas/tnr-backend/internal/services"
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
@@ -21,7 +23,12 @@ func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) 
 
 		foundUser, err := userService.FindOneByID(r.Context(), id)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			if errors.Is(err, repositories.ErrUserNotFound) {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			logger.Error("failed to find one user by ID", "userID", id, "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 

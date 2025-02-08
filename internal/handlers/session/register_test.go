@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/kkstas/tnr-backend/internal/repositories"
@@ -44,6 +45,55 @@ func TestRegister(t *testing.T) {
 		testutils.AssertEqual(t, foundUsers[0].FirstName, userFC.FirstName)
 		testutils.AssertEqual(t, foundUsers[0].LastName, userFC.LastName)
 		testutils.AssertValidDate(t, foundUsers[0].CreatedAt)
+	})
+
+	t.Run("should return 400 with correct response body if decoding request body fails", func(t *testing.T) {
+		t.Parallel()
+
+		serv, cleanup, _ := testutils.NewTestApplication(t)
+		t.Cleanup(cleanup)
+
+		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, ""))
+		response := httptest.NewRecorder()
+		serv.ServeHTTP(response, request)
+
+		testutils.AssertStatus(t, response.Code, http.StatusBadRequest)
+		testutils.AssertEqual(t, strings.TrimSpace(response.Body.String()), `{"message":"failed to decode request body"}`)
+	})
+
+	t.Run("should return 400 with correct response body if user with provided email already exists", func(t *testing.T) {
+		t.Parallel()
+
+		userFC := struct {
+			Email     string `json:"email"`
+			Password  string `json:"password"`
+			FirstName string `json:"firstName"`
+			LastName  string `json:"lastName"`
+		}{
+			Email:     "doe@johndoe.com",
+			Password:  "mypassword123",
+			FirstName: "John",
+			LastName:  "Doe",
+		}
+
+		serv, cleanup, _ := testutils.NewTestApplication(t)
+		t.Cleanup(cleanup)
+
+		{
+			request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, userFC))
+			response := httptest.NewRecorder()
+			serv.ServeHTTP(response, request)
+			if response.Code != http.StatusNoContent {
+				t.Fatalf("expected first response to return correct, got %d", response.Code)
+			}
+		}
+
+		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, userFC))
+		response := httptest.NewRecorder()
+		serv.ServeHTTP(response, request)
+
+		testutils.AssertStatus(t, response.Code, http.StatusBadRequest)
+		testutils.AssertEqual(t, strings.TrimSpace(response.Body.String()), `{"email":"user with that email already exists"}`)
 	})
 
 	t.Run("should reject invalid request properties", func(t *testing.T) {

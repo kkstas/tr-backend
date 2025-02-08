@@ -1,12 +1,14 @@
 package session
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
+	"github.com/kkstas/tnr-backend/internal/repositories"
 	"github.com/kkstas/tnr-backend/internal/services"
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
@@ -29,7 +31,7 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			_ = utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
 			return
 
 		}
@@ -47,8 +49,12 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 
 		err = userService.CreateOne(r.Context(), body.FirstName, body.LastName, body.Email, body.Password)
 		if err != nil {
+			if errors.Is(err, repositories.ErrUserEmailAlreadyExists) {
+				_ = utils.Encode(w, r, http.StatusBadRequest, map[string]string{"email": "user with that email already exists"})
+				return
+			}
 			logger.Error("failed to create user", "error", err)
-			_ = utils.Encode(w, r, http.StatusInternalServerError, err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 

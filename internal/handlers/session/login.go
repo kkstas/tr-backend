@@ -1,12 +1,15 @@
 package session
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+
 	"github.com/kkstas/tnr-backend/internal/auth"
+	"github.com/kkstas/tnr-backend/internal/repositories"
 	"github.com/kkstas/tnr-backend/internal/services"
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
@@ -36,7 +39,12 @@ func LoginHandler(logger *slog.Logger, userService *services.UserService) http.H
 
 		passwordHash, userID, err := userService.FindPasswordHashAndUserIDForEmail(r.Context(), body.Email)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			if errors.Is(err, repositories.ErrUserNotFound) {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			logger.Error("failed to find password hash and user ID for email", "email", body.Email, "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 

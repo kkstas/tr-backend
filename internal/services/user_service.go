@@ -38,6 +38,6 @@ func (u *UserService) FindPasswordHashAndUserIDForEmail(ctx context.Context, ema
 	return passwordHash, userID, nil
 }
 
-func (s *UserService) FindOneByID(ctx context.Context, id string) (models.User, error) {
+func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User, error) {
 	return s.userRepo.FindOneByID(ctx, id)
 }

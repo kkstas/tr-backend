@@ -6,7 +6,21 @@ import (
 	"fmt"
 )
 
-func InitDBTables(ctx context.Context, db *sql.DB) error {
+func OpenDB(ctx context.Context, dbname string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", dbname+"?_pragma=foreign_keys(1)&_time_format=sqlite")
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database: %w", err)
+	}
+
+	err = initDBTables(ctx, db)
+	if err != nil {
+		return nil, fmt.Errorf("failed to init db tables: %w", err)
+	}
+
+	return db, nil
+}
+
+func initDBTables(ctx context.Context, db *sql.DB) error {
 	_, err := db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS users (
 			id            TEXT PRIMARY KEY,

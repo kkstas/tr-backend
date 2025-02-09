@@ -35,15 +35,10 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
 }
 
 func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {
-	dbName := fmt.Sprintf("%s.db", RandomString(32))
-	db, err := sql.Open("sqlite", dbName+"?_pragma=foreign_keys(1)&_time_format=sqlite")
+	dbName := fmt.Sprintf("test-%s.db", RandomString(32))
+	db, err := database.OpenDB(ctx, dbName)
 	if err != nil {
 		t.Fatalf("failed to open sql db: %v", err)
-	}
-
-	err = database.InitDBTables(ctx, db)
-	if err != nil {
-		t.Fatalf("failed to init db tables: %v", err)
 	}
 
 	t.Cleanup(func() {

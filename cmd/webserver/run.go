@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"io"
 	"log/slog"
@@ -16,8 +15,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func run(ctx context.Context, getenv func(string) string,
-) error {
+func run(ctx context.Context, getenv func(string) string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
@@ -26,15 +24,11 @@ func run(ctx context.Context, getenv func(string) string,
 		return err
 	}
 
-	db, err := openDB(config.dbName)
+	db, err := database.OpenDB(ctx, config.dbName)
 	if err != nil {
 		return fmt.Errorf("failed to open db: %w", err)
 	}
 	defer db.Close()
-	err = database.InitDBTables(ctx, db)
-	if err != nil {
-		return fmt.Errorf("failed to init db tables: %w", err)
-	}
 
 	app := app.NewApplication(ctx, appConfig, db, initLogger(os.Stdout))
 
@@ -49,15 +43,6 @@ func run(ctx context.Context, getenv func(string) string,
 	}
 
 	return nil
-}
-
-func openDB(dbname string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite", dbname+"?_pragma=foreign_keys(1)&_time_format=sqlite")
-	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
-	}
-
-	return db, nil
 }
 
 func initLogger(w io.Writer) *slog.Logger {

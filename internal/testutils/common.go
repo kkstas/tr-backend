@@ -19,16 +19,11 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *sql.DB) {
-	t.Helper()
+func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
-	db, cleanupDb := OpenTestDB(t)
-
-	cleanup = func() {
-		cleanupDb()
-		cancel()
-	}
+	db = OpenTestDB(t, ctx)
+	t.Cleanup(cancel)
 
 	config := &app.Config{
 		EnableRegister: true,
@@ -36,30 +31,29 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *
 	}
 	newApp = app.NewApplication(ctx, config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
-	return newApp, cleanup, db
+	return newApp, db
 }
 
-func OpenTestDB(t testing.TB) (db *sql.DB, cleanup func()) {
-	t.Helper()
+func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {
 	dbName := fmt.Sprintf("%s.db", RandomString(32))
 	db, err := sql.Open("sqlite", dbName+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {
 		t.Fatalf("failed to open sql db: %v", err)
 	}
 
-	err = database.InitDBTables(context.Background(), db)
+	err = database.InitDBTables(ctx, db)
 	if err != nil {
 		t.Fatalf("failed to init db tables: %v", err)
 	}
 
-	cleanup = func() {
+	t.Cleanup(func() {
 		db.Close()
 		if err := os.Remove(dbName); err != nil {
 			t.Fatalf("failed to remove test database file %s: %v", dbName, err)
 		}
-	}
+	})
 
-	return db, cleanup
+	return db
 }
 
 func RandomString(length int) string {

@@ -15,8 +15,7 @@ import (
 func TestFindAllVaults(t *testing.T) {
 	t.Run("returns status 200 & array with vaults", func(t *testing.T) {
 		t.Parallel()
-		serv, cleanup, db := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, db := testutils.NewTestApplication(t)
 
 		err := repositories.NewVaultRepo(db).CreateOne(context.Background(), "vault")
 		if err != nil {
@@ -40,8 +39,7 @@ func TestFindAllVaults(t *testing.T) {
 
 	t.Run("returns status 200 & empty array if no vaults are in db", func(t *testing.T) {
 		t.Parallel()
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest("GET", "/vaults", nil)

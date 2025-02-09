@@ -29,8 +29,7 @@ func TestLogin(t *testing.T) {
 			Password: password,
 		}
 
-		serv, cleanup, db := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, db := testutils.NewTestApplication(t)
 		err = repositories.NewUserRepo(db).CreateOne(ctx, "John", "Doe", reqBody.Email, passwordHash)
 		testutils.AssertNoError(t, err)
 
@@ -54,8 +53,7 @@ func TestLogin(t *testing.T) {
 
 	t.Run("should reject invalid request properties", func(t *testing.T) {
 		t.Parallel()
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		type reqBody struct {
 			Email    string `json:"email"`
@@ -100,8 +98,7 @@ func TestLogin(t *testing.T) {
 
 	t.Run("returns 404 if user with given email does not exist", func(t *testing.T) {
 		t.Parallel()
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		reqBody := struct {
 			Email    string `json:"email"`

@@ -15,8 +15,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("creates one user", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		firstName := "John"
@@ -42,8 +41,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("returns error if user with given email already exists", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		email := "some@email.com"
@@ -65,8 +63,7 @@ func TestFindOneUserByID(t *testing.T) {
 	t.Run("finds one user by ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		firstName := "John"
@@ -94,8 +91,7 @@ func TestFindOneUserByID(t *testing.T) {
 	t.Run("returns correct error if user does not exist", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		_, err := userRepo.FindOneByID(ctx, uuid.New().String())
@@ -112,8 +108,7 @@ func TestFindOneUserByEmail(t *testing.T) {
 	t.Run("finds one user by email", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		firstName := "John"
@@ -138,8 +133,7 @@ func TestFindOneUserByEmail(t *testing.T) {
 	t.Run("returns correct error if user does not exist", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
-		db, cleanup := testutils.OpenTestDB(t)
-		t.Cleanup(cleanup)
+		db := testutils.OpenTestDB(t, ctx)
 		userRepo := repositories.NewUserRepo(db)
 
 		_, err := userRepo.FindOneByEmail(ctx, "asdf@asdf.com")

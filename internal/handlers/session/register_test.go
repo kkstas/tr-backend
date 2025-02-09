@@ -16,6 +16,7 @@ func TestRegister(t *testing.T) {
 	t.Run("registers new user", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
+		serv, db := testutils.NewTestApplication(t)
 
 		userFC := struct {
 			Email     string `json:"email"`
@@ -31,9 +32,6 @@ func TestRegister(t *testing.T) {
 
 		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, userFC))
 		response := httptest.NewRecorder()
-
-		serv, cleanup, db := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
 		serv.ServeHTTP(response, request)
 
 		testutils.AssertStatus(t, response.Code, http.StatusNoContent)
@@ -49,9 +47,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("should return 400 with correct response body if decoding request body fails", func(t *testing.T) {
 		t.Parallel()
-
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, ""))
 		response := httptest.NewRecorder()
@@ -76,8 +72,7 @@ func TestRegister(t *testing.T) {
 			LastName:  "Doe",
 		}
 
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		{
 			request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, userFC))
@@ -98,8 +93,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("should reject invalid request properties", func(t *testing.T) {
 		t.Parallel()
-		serv, cleanup, _ := testutils.NewTestApplication(t)
-		t.Cleanup(cleanup)
+		serv, _ := testutils.NewTestApplication(t)
 
 		type reqBody struct {
 			Email     string `json:"email"`

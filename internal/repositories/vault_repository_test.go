@@ -12,8 +12,8 @@ import (
 
 func TestCreateAndFindAllVaults(t *testing.T) {
 	t.Parallel()
-	db, cleanup := testutils.OpenTestDB(t)
-	t.Cleanup(cleanup)
+	ctx := context.Background()
+	db := testutils.OpenTestDB(t, ctx)
 	vaultRepo := repositories.NewVaultRepo(db)
 
 	name := "vault"

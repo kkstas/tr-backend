@@ -30,16 +30,11 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, cleanup func(), db *
 		cancel()
 	}
 
-	getenv := func(k string) string {
-		switch k {
-		case "JWT_SECRET_KEY":
-			return "secret-key"
-		default:
-			return ""
-		}
+	config := &app.Config{
+		EnableRegister: true,
+		JWTSecretKey:   []byte("secret-key"),
 	}
-
-	newApp = app.NewApplication(ctx, getenv, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	newApp = app.NewApplication(ctx, config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
 	return newApp, cleanup, db
 }

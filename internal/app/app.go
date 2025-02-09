@@ -18,7 +18,7 @@ type Application struct {
 
 func NewApplication(
 	ctx context.Context,
-	getenv func(string) string,
+	config *Config,
 	db *sql.DB,
 	logger *slog.Logger,
 ) *Application {

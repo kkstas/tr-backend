@@ -1,4 +1,6 @@
 tmp/
 build/tmp/
 
+notes.md
+
 *.db

@@ -16,17 +16,17 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context, getenv func(string) string,
+) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
-	if err := validateEnvs(); err != nil {
+	config, appConfig, err := getConfigs(getenv)
+	if err != nil {
 		return err
 	}
 
-	flags := parseArgs(args)
-
-	db, err := openDB(flags.dbname)
+	db, err := openDB(config.dbName)
 	if err != nil {
 		return fmt.Errorf("failed to open db: %w", err)
 	}
@@ -36,10 +36,10 @@ func run(ctx context.Context, args []string) error {
 		return fmt.Errorf("failed to init db tables: %w", err)
 	}
 
-	app := app.NewApplication(ctx, os.Getenv, db, initLogger(os.Stdout))
+	app := app.NewApplication(ctx, appConfig, db, initLogger(os.Stdout))
 
 	server := &http.Server{
-		Addr:              ":" + flags.port,
+		Addr:              ":" + config.port,
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           app,
 	}

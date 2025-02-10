@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kkstas/tnr-backend/internal/app"
 	"github.com/kkstas/tnr-backend/internal/repositories"
 	"github.com/kkstas/tnr-backend/internal/testutils"
 )
@@ -166,5 +167,15 @@ func TestRegister(t *testing.T) {
 				testutils.AssertNotEmpty(t, m[tc.key])
 			})
 		}
+	})
+
+	t.Run("disables endpoint if enableRegister is set to false", func(t *testing.T) {
+		t.Parallel()
+		serv, _ := testutils.NewTestAppWithConfig(t, &app.Config{EnableRegister: false})
+
+		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, ""))
+		response := httptest.NewRecorder()
+		serv.ServeHTTP(response, request)
+		testutils.AssertStatus(t, response.Code, http.StatusNotFound)
 	})
 }

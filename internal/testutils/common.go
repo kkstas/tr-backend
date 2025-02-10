@@ -19,19 +19,24 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
+func NewTestAppWithConfig(t testing.TB, config *app.Config) (newApp http.Handler, db *sql.DB) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
 	db = OpenTestDB(t, ctx)
 	t.Cleanup(cancel)
 
+	newApp = app.NewApplication(ctx, config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
+
+	return newApp, db
+
+}
+
+func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
 	config := &app.Config{
 		EnableRegister: true,
 		JWTSecretKey:   []byte("secret-key"),
 	}
-	newApp = app.NewApplication(ctx, config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
-
-	return newApp, db
+	return NewTestAppWithConfig(t, config)
 }
 
 func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {

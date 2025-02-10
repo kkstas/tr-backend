@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/kkstas/tnr-backend/internal/config"
 	"github.com/kkstas/tnr-backend/internal/handlers/misc"
 	"github.com/kkstas/tnr-backend/internal/handlers/session"
 	"github.com/kkstas/tnr-backend/internal/handlers/user"
@@ -14,21 +15,21 @@ import (
 )
 
 func SetupRoutes(
+	cfg *config.Config,
 	logger *slog.Logger,
 	db *sql.DB,
 	userService *services.UserService,
 	vaultService *services.VaultService,
-	enableRegister bool,
 ) http.Handler {
 	mux := http.NewServeMux()
 
-	withUser := mw.WithUser(logger, userService)
+	withUser := mw.WithUser(cfg.JWTSecretKey, logger, userService)
 
 	mux.HandleFunc("GET /health-check", misc.HealthCheckHandler)
 	mux.HandleFunc("/", misc.NotFoundHandler)
 
-	mux.Handle("POST /login", session.LoginHandler(logger, userService))
-	mux.Handle("POST /register", mw.Enable(enableRegister, session.RegisterHandler(logger, userService)))
+	mux.Handle("POST /login", session.LoginHandler(cfg.JWTSecretKey, logger, userService))
+	mux.Handle("POST /register", mw.Enable(cfg.EnableRegister, session.RegisterHandler(logger, userService)))
 
 	mux.Handle("GET /user", withUser(user.GetUserInfo(logger, userService)))
 	mux.Handle("GET /users/{id}", user.FindOneByIDHandler(logger, userService))

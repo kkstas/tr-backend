@@ -14,7 +14,7 @@ import (
 	"github.com/kkstas/tnr-backend/internal/utils"
 )
 
-func LoginHandler(logger *slog.Logger, userService *services.UserService) http.Handler {
+func LoginHandler(jwtSecretKey []byte, logger *slog.Logger, userService *services.UserService) http.Handler {
 	type loginData struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -28,7 +28,8 @@ func LoginHandler(logger *slog.Logger, userService *services.UserService) http.H
 
 		}
 
-		err = validation.ValidateStruct(&body,
+		err = validation.ValidateStruct(
+			&body,
 			validation.Field(&body.Password, validation.Required, validation.Length(minPasswordLength, maxPasswordLength)),
 			validation.Field(&body.Email, validation.Required, is.EmailFormat),
 		)
@@ -53,7 +54,7 @@ func LoginHandler(logger *slog.Logger, userService *services.UserService) http.H
 			return
 		}
 
-		token, err := auth.CreateToken(userID)
+		token, err := auth.CreateToken(jwtSecretKey, userID)
 		if err != nil {
 			logger.Error("failed to create token", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)

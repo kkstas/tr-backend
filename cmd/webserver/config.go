@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kkstas/tnr-backend/internal/app"
+	"github.com/kkstas/tnr-backend/internal/config"
 )
 
-type config struct {
+type cfg struct {
 	port   string
 	dbName string
 }
 
-func getConfigs(getenv func(string) string) (*config, *app.Config, error) {
+func getConfigs(getenv func(string) string) (*cfg, *config.Config, error) {
 	errs := []string{}
 
 	port := getenv("PORT")
@@ -42,11 +42,11 @@ func getConfigs(getenv func(string) string) (*config, *app.Config, error) {
 		return nil, nil, errors.New(strings.Join(append([]string{"ERROR: Environment variables failed validation"}, errs...), "\n - "))
 	}
 
-	return &config{
+	return &cfg{
 			port:   port,
 			dbName: dbName,
 		},
-		&app.Config{
+		&config.Config{
 			JWTSecretKey:   []byte(jwtSecretKey),
 			EnableRegister: enableRegister,
 		},

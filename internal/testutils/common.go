@@ -18,12 +18,15 @@ import (
 
 	"github.com/kkstas/tnr-backend/internal/app"
 	"github.com/kkstas/tnr-backend/internal/auth"
+	"github.com/kkstas/tnr-backend/internal/config"
 	"github.com/kkstas/tnr-backend/internal/database"
 	"github.com/kkstas/tnr-backend/internal/models"
 	"github.com/kkstas/tnr-backend/internal/repositories"
 )
 
-func NewTestAppWithConfig(t testing.TB, config *app.Config) (newApp http.Handler, db *sql.DB) {
+var jwtKey = []byte("secret-key")
+
+func NewTestAppWithConfig(t testing.TB, config *config.Config) (newApp http.Handler, db *sql.DB) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 
 	db = OpenTestDB(t, ctx)
@@ -36,9 +39,9 @@ func NewTestAppWithConfig(t testing.TB, config *app.Config) (newApp http.Handler
 }
 
 func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
-	config := &app.Config{
+	config := &config.Config{
 		EnableRegister: true,
-		JWTSecretKey:   []byte("secret-key"),
+		JWTSecretKey:   jwtKey,
 	}
 	return NewTestAppWithConfig(t, config)
 }
@@ -69,7 +72,7 @@ func CreateUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.U
 	createdUser, err := userRepo.FindOneByEmail(context.Background(), userEmail)
 	AssertNoError(t, err)
 
-	tkn, err := auth.CreateToken(createdUser.ID)
+	tkn, err := auth.CreateToken(jwtKey, createdUser.ID)
 	AssertNoError(t, err)
 
 	return tkn.Token, createdUser

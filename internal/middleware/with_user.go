@@ -13,7 +13,7 @@ import (
 	"github.com/kkstas/tnr-backend/internal/services"
 )
 
-func WithUser(logger *slog.Logger, userService *services.UserService) func(fn func(w http.ResponseWriter, r *http.Request, user *models.User)) http.HandlerFunc {
+func WithUser(jwtSecretKey []byte, logger *slog.Logger, userService *services.UserService) func(fn func(w http.ResponseWriter, r *http.Request, user *models.User)) http.HandlerFunc {
 	return func(fn func(w http.ResponseWriter, r *http.Request, user *models.User)) http.HandlerFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenString := r.Header.Get("Authorization")
@@ -23,7 +23,7 @@ func WithUser(logger *slog.Logger, userService *services.UserService) func(fn fu
 			}
 			tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-			token, err := auth.VerifyToken(tokenString)
+			token, err := auth.VerifyToken(jwtSecretKey, tokenString)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				if !errors.Is(err, auth.ErrInvalidToken) {

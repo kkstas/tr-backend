@@ -9,15 +9,13 @@ import (
 
 var ErrInvalidToken = errors.New("invalid token")
 
-var secretKey = []byte("secret-key")
-
 type UserToken struct {
 	Token     string `json:"token"`
 	ExpiresIn int64  `json:"expiresIn"`
 	TokenType string `json:"tokenType"`
 }
 
-func CreateToken(userID string) (*UserToken, error) {
+func CreateToken(secretKey []byte, userID string) (*UserToken, error) {
 	expiresIn := time.Now().Add(time.Hour * 24 * 7).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
@@ -34,7 +32,7 @@ func CreateToken(userID string) (*UserToken, error) {
 	return &UserToken{Token: tokenString, ExpiresIn: expiresIn, TokenType: "Bearer"}, nil
 }
 
-func VerifyToken(tokenString string) (*jwt.Token, error) {
+func VerifyToken(secretKey []byte, tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})

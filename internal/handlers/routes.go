@@ -22,13 +22,15 @@ func SetupRoutes(
 ) http.Handler {
 	mux := http.NewServeMux()
 
+	withUser := mw.WithUser(logger, userService)
+
 	mux.HandleFunc("GET /health-check", misc.HealthCheckHandler)
 	mux.HandleFunc("/", misc.NotFoundHandler)
 
 	mux.Handle("POST /login", session.LoginHandler(logger, userService))
 	mux.Handle("POST /register", mw.Enable(enableRegister, session.RegisterHandler(logger, userService)))
 
-	mux.Handle("GET /users", user.FindAllHandler(logger, userService))
+	mux.Handle("GET /user", withUser(user.GetUserInfo(logger, userService)))
 	mux.Handle("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
 	mux.Handle("POST /vaults", vault.CreateOneHandler(logger, vaultService))
 	mux.Handle("GET /vaults", vault.FindAllHandler(logger, vaultService))

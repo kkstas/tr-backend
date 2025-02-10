@@ -1,11 +1,13 @@
 package auth
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+var ErrInvalidToken = errors.New("invalid token")
 
 var secretKey = []byte("secret-key")
 
@@ -20,7 +22,7 @@ func CreateToken(userID string) (*UserToken, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":  userID,
+			"sub": userID,
 			"exp": expiresIn,
 		})
 
@@ -32,17 +34,17 @@ func CreateToken(userID string) (*UserToken, error) {
 	return &UserToken{Token: tokenString, ExpiresIn: expiresIn, TokenType: "Bearer"}, nil
 }
 
-func VerifyToken(tokenString string) error {
+func VerifyToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return nil, ErrInvalidToken
 	}
 
-	return nil
+	return token, nil
 }

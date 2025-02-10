@@ -14,9 +14,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kkstas/tnr-backend/internal/app"
-	"github.com/kkstas/tnr-backend/internal/database"
 	_ "modernc.org/sqlite"
+
+	"github.com/kkstas/tnr-backend/internal/app"
+	"github.com/kkstas/tnr-backend/internal/auth"
+	"github.com/kkstas/tnr-backend/internal/database"
+	"github.com/kkstas/tnr-backend/internal/models"
+	"github.com/kkstas/tnr-backend/internal/repositories"
 )
 
 func NewTestAppWithConfig(t testing.TB, config *app.Config) (newApp http.Handler, db *sql.DB) {
@@ -54,6 +58,21 @@ func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {
 	})
 
 	return db
+}
+
+func CreateUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.User) {
+	userRepo := repositories.NewUserRepo(db)
+	userEmail := RandomString(16) + "@email.com"
+	err := userRepo.CreateOne(context.Background(), "firstName_"+RandomString(8), "lastName_"+RandomString(8), userEmail, "password")
+	AssertNoError(t, err)
+
+	createdUser, err := userRepo.FindOneByEmail(context.Background(), userEmail)
+	AssertNoError(t, err)
+
+	tkn, err := auth.CreateToken(createdUser.ID)
+	AssertNoError(t, err)
+
+	return tkn.Token, createdUser
 }
 
 func RandomString(length int) string {

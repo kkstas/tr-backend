@@ -30,7 +30,7 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			_ = utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
+			utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
 			return
 
 		}
@@ -42,14 +42,14 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 			validation.Field(&body.Password, validation.Required, validation.Length(minPasswordLength, maxPasswordLength)),
 		)
 		if err != nil {
-			_ = utils.Encode(w, r, http.StatusBadRequest, err)
+			utils.Encode(w, r, http.StatusBadRequest, err)
 			return
 		}
 
 		err = userService.CreateOne(r.Context(), body.FirstName, body.LastName, body.Email, body.Password)
 		if err != nil {
 			if errors.Is(err, services.ErrUserEmailAlreadyExists) {
-				_ = utils.Encode(w, r, http.StatusBadRequest, map[string]string{"email": "user with that email already exists"})
+				utils.Encode(w, r, http.StatusBadRequest, map[string]string{"email": "user with that email already exists"})
 				return
 			}
 			logger.Error("failed to create user", "error", err)

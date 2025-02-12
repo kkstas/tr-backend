@@ -33,7 +33,7 @@ func LoginHandler(jwtSecretKey []byte, logger *slog.Logger, userService *service
 			validation.Field(&body.Email, validation.Required, is.EmailFormat),
 		)
 		if err != nil {
-			_ = utils.Encode(w, r, http.StatusBadRequest, err)
+			utils.Encode(w, r, http.StatusBadRequest, err)
 			return
 		}
 
@@ -60,6 +60,6 @@ func LoginHandler(jwtSecretKey []byte, logger *slog.Logger, userService *service
 			return
 		}
 
-		_ = utils.Encode(w, r, http.StatusOK, token)
+		utils.Encode(w, r, http.StatusOK, token)
 	})
 }

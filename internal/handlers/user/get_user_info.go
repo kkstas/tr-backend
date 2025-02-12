@@ -14,11 +14,6 @@ func GetUserInfo(
 	userService *services.UserService,
 ) func(w http.ResponseWriter, r *http.Request, user *models.User) {
 	return func(w http.ResponseWriter, r *http.Request, user *models.User) {
-		err := utils.Encode(w, r, http.StatusOK, user)
-		if err != nil {
-			logger.Error("failed to encode vaults", "error", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		utils.Encode(w, r, http.StatusOK, user)
 	}
 }

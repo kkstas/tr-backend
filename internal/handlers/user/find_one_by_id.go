@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/utils"
 )
@@ -23,7 +22,7 @@ func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) 
 
 		foundUser, err := userService.FindOneByID(r.Context(), id)
 		if err != nil {
-			if errors.Is(err, repositories.ErrUserNotFound) {
+			if errors.Is(err, services.ErrUserNotFound) {
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}

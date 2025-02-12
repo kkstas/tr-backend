@@ -8,8 +8,10 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	"github.com/kkstas/tr-backend/internal/models"
 	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
@@ -19,18 +21,18 @@ func TestFindOneUser(t *testing.T) {
 		ctx := context.Background()
 		serv, db := testutils.NewTestApplication(t)
 
-		userRepo := repositories.NewUserRepo(db)
+		userService := services.NewUserService(repositories.NewUserRepo(db))
 
 		firstName := "John"
 		lastName := "Doe"
 		email := "john@doe.com"
 
-		err := userRepo.CreateOne(ctx, firstName, lastName, email, "somepassword")
+		err := userService.CreateOne(ctx, firstName, lastName, email, "somepassword")
 		if err != nil {
 			t.Fatalf("failed to create new user in repo: %v", err)
 		}
 
-		foundUsers, err := userRepo.FindAll(ctx)
+		foundUsers, err := userService.FindAll(ctx)
 		if err != nil {
 			t.Fatalf("failed to find users in repo: %v", err)
 		}

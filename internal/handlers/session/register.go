@@ -8,7 +8,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/utils"
 )
@@ -49,7 +48,7 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 
 		err = userService.CreateOne(r.Context(), body.FirstName, body.LastName, body.Email, body.Password)
 		if err != nil {
-			if errors.Is(err, repositories.ErrUserEmailAlreadyExists) {
+			if errors.Is(err, services.ErrUserEmailAlreadyExists) {
 				_ = utils.Encode(w, r, http.StatusBadRequest, map[string]string{"email": "user with that email already exists"})
 				return
 			}

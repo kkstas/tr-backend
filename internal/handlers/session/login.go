@@ -9,7 +9,6 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
 	"github.com/kkstas/tr-backend/internal/auth"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/utils"
 )
@@ -40,7 +39,7 @@ func LoginHandler(jwtSecretKey []byte, logger *slog.Logger, userService *service
 
 		passwordHash, userID, err := userService.FindPasswordHashAndUserIDForEmail(r.Context(), body.Email)
 		if err != nil {
-			if errors.Is(err, repositories.ErrUserNotFound) {
+			if errors.Is(err, services.ErrUserNotFound) {
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}

@@ -20,7 +20,6 @@ func NewVaultRepo(db *sql.DB) *VaultRepo {
 func (r *VaultRepo) CreateOne(ctx context.Context, name string) error {
 	_, err := r.db.ExecContext(ctx, `INSERT INTO vaults(id, name) VALUES ($1, $2);`, uuid.New(), name)
 	if err != nil {
-		// TODO: handle unique constraint errors
 		return fmt.Errorf("failed to create vault: %w", err)
 	}
 	return nil

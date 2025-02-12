@@ -15,10 +15,10 @@ func NewVaultService(vaultRepo *repositories.VaultRepo) *VaultService {
 	return &VaultService{vaultRepo: vaultRepo}
 }
 
-func (s *VaultService) FindAll(ctx context.Context) ([]models.Vault, error) {
-	return s.vaultRepo.FindAll(ctx)
+func (s *VaultService) CreateOne(ctx context.Context, userID, vaultName string) error {
+	return s.vaultRepo.CreateOne(ctx, userID, vaultName)
 }
 
-func (s *VaultService) CreateOne(ctx context.Context, name string) error {
-	return s.vaultRepo.CreateOne(ctx, name)
+func (s *VaultService) FindAll(ctx context.Context, userID string) ([]models.UserVaultWithRole, error) {
+	return s.vaultRepo.FindAll(ctx, userID)
 }

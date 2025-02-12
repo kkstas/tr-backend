@@ -32,7 +32,6 @@ func RegisterHandler(logger *slog.Logger, userService *services.UserService) htt
 		if err != nil {
 			utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
 			return
-
 		}
 
 		err = validation.ValidateStruct(&body,

@@ -23,7 +23,8 @@ func SetupRoutes(
 ) http.Handler {
 	mux := http.NewServeMux()
 
-	withUser := mw.WithUser(cfg.JWTSecretKey, logger, userService)
+	requireAuth := mw.RequireAuth(cfg.JWTSecretKey, logger)
+	withUser := mw.WithUser(logger, userService)
 
 	mux.HandleFunc("GET /health-check", misc.HealthCheckHandler)
 	mux.HandleFunc("/", misc.NotFoundHandler)
@@ -31,7 +32,7 @@ func SetupRoutes(
 	mux.Handle("POST /login", session.LoginHandler(cfg.JWTSecretKey, logger, userService))
 	mux.Handle("POST /register", mw.Enable(cfg.EnableRegister, session.RegisterHandler(logger, userService)))
 
-	mux.Handle("GET /user", withUser(user.GetUserInfo(logger, userService)))
+	mux.Handle("GET /user", requireAuth(withUser(user.GetUserInfo(logger, userService))))
 	mux.Handle("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
 	mux.Handle("POST /vaults", vault.CreateOneHandler(logger, vaultService))
 	mux.Handle("GET /vaults", vault.FindAllHandler(logger, vaultService))

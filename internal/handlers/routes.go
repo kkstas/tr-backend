@@ -9,7 +9,6 @@ import (
 	"github.com/kkstas/tr-backend/internal/handlers/misc"
 	"github.com/kkstas/tr-backend/internal/handlers/session"
 	"github.com/kkstas/tr-backend/internal/handlers/user"
-	"github.com/kkstas/tr-backend/internal/handlers/vault"
 	mw "github.com/kkstas/tr-backend/internal/middleware"
 	"github.com/kkstas/tr-backend/internal/services"
 )
@@ -33,9 +32,6 @@ func SetupRoutes(
 	mux.Handle("POST /register", mw.Enable(cfg.EnableRegister, session.RegisterHandler(logger, userService)))
 
 	mux.Handle("GET /user", requireAuth(withUser(user.GetUserInfo(logger, userService))))
-	mux.Handle("GET /users/{id}", user.FindOneByIDHandler(logger, userService))
-	mux.Handle("POST /vaults", vault.CreateOneHandler(logger, vaultService))
-	mux.Handle("GET /vaults", vault.FindAllHandler(logger, vaultService))
 
 	return mux
 }

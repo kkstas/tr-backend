@@ -8,9 +8,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/kkstas/tnr-backend/internal/auth"
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/auth"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/services"
 )
 
 func WithUser(jwtSecretKey []byte, logger *slog.Logger, userService *services.UserService) func(fn func(w http.ResponseWriter, r *http.Request, user *models.User)) http.HandlerFunc {

@@ -5,13 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kkstas/tnr-backend/internal/config"
-	"github.com/kkstas/tnr-backend/internal/handlers/misc"
-	"github.com/kkstas/tnr-backend/internal/handlers/session"
-	"github.com/kkstas/tnr-backend/internal/handlers/user"
-	"github.com/kkstas/tnr-backend/internal/handlers/vault"
-	mw "github.com/kkstas/tnr-backend/internal/middleware"
-	"github.com/kkstas/tnr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/handlers/misc"
+	"github.com/kkstas/tr-backend/internal/handlers/session"
+	"github.com/kkstas/tr-backend/internal/handlers/user"
+	"github.com/kkstas/tr-backend/internal/handlers/vault"
+	mw "github.com/kkstas/tr-backend/internal/middleware"
+	"github.com/kkstas/tr-backend/internal/services"
 )
 
 func SetupRoutes(

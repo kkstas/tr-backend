@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kkstas/tnr-backend/internal/config"
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/testutils"
+	"github.com/kkstas/tr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestRegister(t *testing.T) {

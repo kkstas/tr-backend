@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kkstas/tnr-backend/internal/testutils"
+	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestHealthCheck(t *testing.T) {

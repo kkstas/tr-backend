@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/kkstas/tnr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/models"
 )
 
 var ErrUserNotFound = errors.New("user not found")

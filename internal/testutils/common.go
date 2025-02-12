@@ -16,12 +16,12 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"github.com/kkstas/tnr-backend/internal/app"
-	"github.com/kkstas/tnr-backend/internal/auth"
-	"github.com/kkstas/tnr-backend/internal/config"
-	"github.com/kkstas/tnr-backend/internal/database"
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/app"
+	"github.com/kkstas/tr-backend/internal/auth"
+	"github.com/kkstas/tr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/database"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/repositories"
 )
 
 var jwtKey = []byte("secret-key")

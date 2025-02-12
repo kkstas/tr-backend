@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/services"
-	"github.com/kkstas/tnr-backend/internal/utils"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/utils"
 )
 
 func GetUserInfo(

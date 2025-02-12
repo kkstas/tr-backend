@@ -7,8 +7,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/kkstas/tnr-backend/internal/services"
-	"github.com/kkstas/tnr-backend/internal/utils"
+	"github.com/kkstas/tr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/utils"
 )
 
 func CreateOneHandler(logger *slog.Logger, vaultService *services.VaultService) http.Handler {

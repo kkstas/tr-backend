@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/testutils"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestFindAllVaults(t *testing.T) {

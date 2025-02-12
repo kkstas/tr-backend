@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kkstas/tnr-backend/internal/auth"
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/auth"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/repositories"
 )
 
 type UserService struct {

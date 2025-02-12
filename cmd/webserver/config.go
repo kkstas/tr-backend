@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kkstas/tnr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/config"
 )
 
 type cfg struct {

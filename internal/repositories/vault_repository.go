@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/kkstas/tnr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/models"
 )
 
 type VaultRepo struct {

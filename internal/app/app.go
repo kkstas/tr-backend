@@ -6,11 +6,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kkstas/tnr-backend/internal/config"
-	"github.com/kkstas/tnr-backend/internal/handlers"
-	"github.com/kkstas/tnr-backend/internal/middleware"
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/handlers"
+	"github.com/kkstas/tr-backend/internal/middleware"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/services"
 )
 
 type Application struct {

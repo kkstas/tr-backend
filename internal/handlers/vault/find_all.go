@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kkstas/tnr-backend/internal/services"
-	"github.com/kkstas/tnr-backend/internal/utils"
+	"github.com/kkstas/tr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/utils"
 )
 
 func FindAllHandler(logger *slog.Logger, vaultService *services.VaultService) http.Handler {

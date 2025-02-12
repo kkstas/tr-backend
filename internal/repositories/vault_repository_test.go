@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/testutils"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestCreateAndFindAllVaults(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/services"
-	"github.com/kkstas/tnr-backend/internal/utils"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/utils"
 )
 
 var (

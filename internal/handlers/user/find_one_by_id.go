@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/kkstas/tnr-backend/internal/repositories"
-	"github.com/kkstas/tnr-backend/internal/services"
-	"github.com/kkstas/tnr-backend/internal/utils"
+	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/services"
+	"github.com/kkstas/tr-backend/internal/utils"
 )
 
 func FindOneByIDHandler(logger *slog.Logger, userService *services.UserService) http.Handler {

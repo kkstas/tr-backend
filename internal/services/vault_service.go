@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
-	"github.com/kkstas/tnr-backend/internal/models"
-	"github.com/kkstas/tnr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/repositories"
 )
 
 type VaultService struct {

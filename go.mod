@@ -1,4 +1,4 @@
-module github.com/kkstas/tnr-backend
+module github.com/kkstas/tr-backend
 
 go 1.23.4
 

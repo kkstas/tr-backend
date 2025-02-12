@@ -10,8 +10,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/kkstas/tnr-backend/internal/app"
-	"github.com/kkstas/tnr-backend/internal/database"
+	"github.com/kkstas/tr-backend/internal/app"
+	"github.com/kkstas/tr-backend/internal/database"
 	_ "modernc.org/sqlite"
 )
 

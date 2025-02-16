@@ -6,17 +6,18 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
-func TestCreateOne(t *testing.T) {
+func TestUserService_CreateOne(t *testing.T) {
+	t.Parallel()
+
 	t.Run("creates one user", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		userService := services.NewUserService(repositories.NewUserRepo(db))
+		userService := testutils.NewTestUserService(db)
 
 		firstName := "John"
 		lastName := "Doe"
@@ -42,7 +43,7 @@ func TestCreateOne(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		userService := services.NewUserService(repositories.NewUserRepo(db))
+		userService := testutils.NewTestUserService(db)
 
 		email := "some@email.com"
 

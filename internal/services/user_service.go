@@ -63,3 +63,16 @@ func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User,
 
 	return user, nil
 }
+
+func (s *UserService) FindOneByEmail(ctx context.Context, email string) (*models.User, error) {
+	user, err := s.userRepo.FindOneByEmail(ctx, email)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrUserNotFound
+	}
+
+	return user, nil
+}
+
+func (s *UserService) AssignActiveVault(ctx context.Context, userID, vaultID string) error {
+	return s.userRepo.AssignActiveVault(ctx, userID, vaultID)
+}

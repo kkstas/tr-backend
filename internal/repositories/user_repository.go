@@ -65,14 +65,20 @@ func (r *UserRepo) FindAll(ctx context.Context) ([]models.User, error) {
 
 func (r *UserRepo) FindOneByID(ctx context.Context, id string) (*models.User, error) {
 	var user models.User
+	var activeVault sql.NullString
+
 	err := r.db.QueryRowContext(ctx, `
-			SELECT id, first_name, last_name, email, created_at
+			SELECT id, first_name, last_name, email, active_vault, created_at
 			FROM users
 			WHERE users.id = $1;
 		`, id).
-		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.CreatedAt)
+		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &activeVault, &user.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by ID: %w", err)
+	}
+
+	if activeVault.Valid {
+		user.ActiveVault = activeVault.String
 	}
 
 	return &user, nil
@@ -80,15 +86,33 @@ func (r *UserRepo) FindOneByID(ctx context.Context, id string) (*models.User, er
 
 func (r *UserRepo) FindOneByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
+	var activeVault sql.NullString
+
 	err := r.db.QueryRowContext(ctx, `
-			SELECT id, first_name, last_name, email, created_at
+			SELECT id, first_name, last_name, email, active_vault, created_at
 			FROM users
 			WHERE users.email = $1;
 		`, email).
-		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.CreatedAt)
+		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &activeVault, &user.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by email: %w", err)
 	}
 
+	if activeVault.Valid {
+		user.ActiveVault = activeVault.String
+	}
+
 	return &user, nil
+}
+
+func (r *UserRepo) AssignActiveVault(ctx context.Context, userID, vaultID string) error {
+	_, err := r.db.ExecContext(ctx, `
+		UPDATE users
+		SET active_vault = $1
+		WHERE id = $2
+	`, vaultID, userID)
+	if err != nil {
+		return fmt.Errorf("failed to assign active vault %s to user %s: %w", vaultID, userID, err)
+	}
+	return nil
 }

@@ -8,18 +8,17 @@ import (
 	"testing"
 
 	"github.com/kkstas/tr-backend/internal/auth"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestLogin(t *testing.T) {
+	t.Parallel()
+
 	t.Run("returns auth token", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 
 		password := testutils.RandomString(32)
-		passwordHash, err := auth.HashPassword(password)
-		testutils.AssertNoError(t, err)
 
 		reqBody := struct {
 			Email    string `json:"email"`
@@ -30,7 +29,7 @@ func TestLogin(t *testing.T) {
 		}
 
 		serv, db := testutils.NewTestApplication(t)
-		err = repositories.NewUserRepo(db).CreateOne(ctx, "John", "Doe", reqBody.Email, passwordHash)
+		err := testutils.NewTestUserService(db).CreateOne(ctx, "John", "Doe", reqBody.Email, password)
 		testutils.AssertNoError(t, err)
 
 		request := httptest.NewRequest("POST", "/login", testutils.ToJSONBuffer(t, reqBody))

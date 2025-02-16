@@ -7,11 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/models"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestCreateOne(t *testing.T) {
+	t.Parallel()
+
 	t.Run("creates new vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
@@ -28,12 +30,41 @@ func TestCreateOne(t *testing.T) {
 
 		testutils.AssertStatus(t, response.Code, http.StatusNoContent)
 
-		vaults, err := repositories.NewVaultRepo(db).FindAll(context.Background(), user.ID)
+		vaults, err := testutils.NewTestVaultService(db).FindAll(context.Background(), user.ID)
 		testutils.AssertNoError(t, err)
 
 		testutils.AssertEqual(t, len(vaults), 1)
 		testutils.AssertEqual(t, vaults[0].Name, vaultFC.VaultName)
-		testutils.AssertEqual(t, vaults[0].UserRole, "owner")
+		testutils.AssertEqual(t, vaults[0].UserRole, models.VaultRoleOwner)
+	})
+
+	t.Run("vault id is saved as user's active vault if user had no active vault", func(t *testing.T) {
+		t.Parallel()
+		serv, db := testutils.NewTestApplication(t)
+		token, user := testutils.CreateUserWithToken(t, db)
+
+		vaultFC := struct {
+			VaultName string `json:"vaultName"`
+		}{VaultName: "asdf"}
+
+		request := httptest.NewRequest("POST", "/vaults", testutils.ToJSONBuffer(t, vaultFC))
+		request.Header.Set("Authorization", "Bearer "+token)
+		response := httptest.NewRecorder()
+		serv.ServeHTTP(response, request)
+
+		testutils.AssertStatus(t, response.Code, http.StatusNoContent)
+
+		vaults, err := testutils.NewTestVaultService(db).FindAll(context.Background(), user.ID)
+		testutils.AssertNoError(t, err)
+
+		testutils.AssertEqual(t, len(vaults), 1)
+		testutils.AssertEqual(t, vaults[0].Name, vaultFC.VaultName)
+		testutils.AssertEqual(t, vaults[0].UserRole, models.VaultRoleOwner)
+
+		newUserData, err := testutils.NewTestUserService(db).FindOneByID(context.Background(), user.ID)
+		testutils.AssertNoError(t, err)
+
+		testutils.AssertEqual(t, newUserData.ActiveVault, vaults[0].ID)
 	})
 
 	t.Run("returns 400 with error message if request body is invalid", func(t *testing.T) {

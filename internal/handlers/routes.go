@@ -32,10 +32,11 @@ func SetupRoutes(
 	mux.Handle("POST /login", session.LoginHandler(cfg.JWTSecretKey, logger, userService))
 	mux.Handle("POST /register", mw.Enable(cfg.EnableRegister, session.RegisterHandler(logger, userService)))
 
-	mux.Handle("GET /user", requireAuth(withUser(user.GetUserInfo(logger, userService))))
+	mux.Handle("GET /user", requireAuth(withUser(user.GetUserInfo(userService))))
 
 	mux.Handle("POST /vaults", requireAuth(withUser(vault.CreateOne(vaultService))))
 	mux.Handle("GET /vaults", requireAuth(withUser(vault.FindAll(vaultService))))
+	mux.Handle("DELETE /vaults/{id}", requireAuth(withUser(vault.DeleteOneByID(logger, vaultService))))
 
 	return mux
 }

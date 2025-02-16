@@ -29,7 +29,7 @@ func NewApplication(
 	userRepo := repositories.NewUserRepo(db)
 	userService := services.NewUserService(userRepo)
 	vaultRepo := repositories.NewVaultRepo(db)
-	vaultService := services.NewVaultService(vaultRepo)
+	vaultService := services.NewVaultService(vaultRepo, userService)
 
 	mux := handlers.SetupRoutes(config, logger, db, userService, vaultService)
 

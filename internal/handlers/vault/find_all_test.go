@@ -8,24 +8,26 @@ import (
 	"testing"
 
 	"github.com/kkstas/tr-backend/internal/models"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestFindAll(t *testing.T) {
+	t.Parallel()
+
 	t.Run("finds all vaults that belong to user making the request", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
 
 		// create vault for user
 		token, user := testutils.CreateUserWithToken(t, db)
-		err := repositories.NewVaultRepo(db).CreateOne(context.Background(), user.ID, "name")
+
+		err := testutils.NewTestVaultService(db).CreateOne(context.Background(), user.ID, "name")
 		testutils.AssertNoError(t, err)
 
 		// also create vault for other user that should not be returned
 		{
 			_, otherUser := testutils.CreateUserWithToken(t, db)
-			err := repositories.NewVaultRepo(db).CreateOne(context.Background(), otherUser.ID, "asdf")
+			err := testutils.NewTestVaultService(db).CreateOne(context.Background(), otherUser.ID, "asdf")
 			testutils.AssertNoError(t, err)
 		}
 

@@ -27,8 +27,10 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 			first_name    TEXT NOT NULL,
 			last_name     TEXT NOT NULL,
 			email         TEXT NOT NULL UNIQUE,
+			active_vault  TEXT NULL,
 			password_hash TEXT NOT NULL,
 			created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (active_vault) REFERENCES vaults(id) ON DELETE SET NULL
 		);
 	`)
 	if err != nil {

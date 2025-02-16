@@ -13,6 +13,8 @@ import (
 )
 
 func TestCreateOne(t *testing.T) {
+	t.Parallel()
+
 	t.Run("creates one user", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
@@ -58,6 +60,8 @@ func TestCreateOne(t *testing.T) {
 }
 
 func TestFindOneUserByID(t *testing.T) {
+	t.Parallel()
+
 	t.Run("finds one user by ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
@@ -103,6 +107,8 @@ func TestFindOneUserByID(t *testing.T) {
 }
 
 func TestFindOneUserByEmail(t *testing.T) {
+	t.Parallel()
+
 	t.Run("finds one user by email", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()

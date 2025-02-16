@@ -9,11 +9,12 @@ import (
 	"testing"
 
 	"github.com/kkstas/tr-backend/internal/config"
-	"github.com/kkstas/tr-backend/internal/repositories"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
 func TestRegister(t *testing.T) {
+	t.Parallel()
+
 	t.Run("registers new user", func(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
@@ -37,7 +38,7 @@ func TestRegister(t *testing.T) {
 
 		testutils.AssertStatus(t, response.Code, http.StatusNoContent)
 
-		foundUsers, err := repositories.NewUserRepo(db).FindAll(ctx)
+		foundUsers, err := testutils.NewTestUserService(db).FindAll(ctx)
 		testutils.AssertNoError(t, err)
 
 		testutils.AssertEqual(t, foundUsers[0].Email, userFC.Email)

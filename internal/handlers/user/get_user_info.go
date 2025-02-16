@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log/slog"
 	"net/http"
 
 	"github.com/kkstas/tr-backend/internal/models"
@@ -10,7 +9,6 @@ import (
 )
 
 func GetUserInfo(
-	logger *slog.Logger,
 	userService *services.UserService,
 ) func(w http.ResponseWriter, r *http.Request, user *models.User) {
 	return func(w http.ResponseWriter, r *http.Request, user *models.User) {

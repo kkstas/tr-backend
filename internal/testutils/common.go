@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/kkstas/tr-backend/internal/database"
 	"github.com/kkstas/tr-backend/internal/models"
 	"github.com/kkstas/tr-backend/internal/repositories"
+	"github.com/kkstas/tr-backend/internal/services"
 )
 
 var jwtKey = []byte("secret-key")
@@ -63,13 +65,21 @@ func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {
 	return db
 }
 
+func NewTestUserService(db *sql.DB) *services.UserService {
+	return services.NewUserService(repositories.NewUserRepo(db))
+}
+
+func NewTestVaultService(db *sql.DB) *services.VaultService {
+	return services.NewVaultService(repositories.NewVaultRepo(db), NewTestUserService(db))
+}
+
 func CreateUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.User) {
-	userRepo := repositories.NewUserRepo(db)
+	userService := NewTestUserService(db)
 	userEmail := RandomString(16) + "@email.com"
-	err := userRepo.CreateOne(context.Background(), "firstName_"+RandomString(8), "lastName_"+RandomString(8), userEmail, "password")
+	err := userService.CreateOne(context.Background(), "firstName_"+RandomString(8), "lastName_"+RandomString(8), userEmail, "password")
 	AssertNoError(t, err)
 
-	createdUser, err := userRepo.FindOneByEmail(context.Background(), userEmail)
+	createdUser, err := userService.FindOneByEmail(context.Background(), userEmail)
 	AssertNoError(t, err)
 
 	tkn, err := auth.CreateToken(jwtKey, createdUser.ID)
@@ -135,9 +145,24 @@ func AssertNoError(t testing.TB, err error) {
 	}
 }
 
-func AssertNotEmpty(t testing.TB, got string) {
+func AssertNotEmpty[T any](t testing.TB, got T) {
 	t.Helper()
-	if len(got) == 0 {
-		t.Error("expected a non-empty string but didn't get one")
+
+	v := reflect.ValueOf(got)
+
+	if !v.IsValid() || (v.Kind() == reflect.Ptr && v.IsNil()) {
+		t.Errorf("expected a non-nil value but got nil %T", got)
+		return
+	}
+
+	switch v.Kind() {
+	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
+		if v.Len() == 0 {
+			t.Errorf("expected a non-empty %T but got empty", got)
+		}
+	case reflect.Ptr:
+		return
+	default:
+		return
 	}
 }

@@ -24,11 +24,11 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 	_, err := db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS users (
 			id            TEXT PRIMARY KEY,
-			first_name    VARCHAR(255) NOT NULL,
-			last_name     VARCHAR(255) NOT NULL,
-			email         VARCHAR(255) NOT NULL UNIQUE,
-			password_hash VARCHAR(255) NOT NULL,
-			created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+			first_name    TEXT NOT NULL,
+			last_name     TEXT NOT NULL,
+			email         TEXT NOT NULL UNIQUE,
+			password_hash TEXT NOT NULL,
+			created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
 		);
 	`)
 	if err != nil {
@@ -38,7 +38,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS vaults (
 			id          TEXT PRIMARY KEY,
-			name        VARCHAR(255) NOT NULL,
+			name        TEXT NOT NULL,
 			created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
@@ -50,7 +50,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 		CREATE TABLE IF NOT EXISTS user_vaults (
 			user_id     TEXT NOT NULL,
 			vault_id    TEXT NOT NULL,
-			role        VARCHAR(255) NOT NULL,
+			role        TEXT NOT NULL,
 			created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (user_id, vault_id),
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -64,7 +64,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS expense_categories (
 			id         TEXT PRIMARY KEY,
-			name       VARCHAR(255) NOT NULL UNIQUE,
+			name       TEXT NOT NULL UNIQUE,
 			priority   INTEGER NOT NULL,
 			vault_id   TEXT NOT NULL,
 			created_by TEXT NOT NULL,

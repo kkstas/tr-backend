@@ -4,3 +4,4 @@ build/tmp/
 notes.md
 
 *.db
+*.db-journal

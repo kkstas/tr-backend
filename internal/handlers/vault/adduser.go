@@ -24,7 +24,7 @@ func AddUser(
 
 		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
+			utils.Encode(w, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
 			return
 		}
 
@@ -33,22 +33,22 @@ func AddUser(
 			validation.Field(&body.Role, validation.Required, validation.In(string(models.VaultRoleEditor))),
 		)
 		if err != nil {
-			utils.Encode(w, r, http.StatusBadRequest, err)
+			utils.Encode(w, http.StatusBadRequest, err)
 			return
 		}
 
 		err = vaultService.AddUser(r.Context(), user.ID, body.UserID, vaultID, models.VaultRole(body.Role))
 		if err != nil {
 			if errors.Is(err, services.ErrUserAlreadyAssignedToVault) {
-				utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "user has already been assigned to this vault"})
+				utils.Encode(w, http.StatusBadRequest, map[string]string{"message": "user has already been assigned to this vault"})
 				return
 			}
 
 			if errors.Is(err, services.ErrVaultNotFound) {
-				utils.Encode(w, r, http.StatusNotFound, map[string]string{"message": "vault not found"})
+				utils.Encode(w, http.StatusNotFound, map[string]string{"message": "vault not found"})
 				return
 			}
-			utils.Encode(w, r, http.StatusInternalServerError, err.Error())
+			utils.Encode(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 

@@ -25,7 +25,7 @@ func CreateOne(
 	return func(w http.ResponseWriter, r *http.Request, user *models.User) {
 		body, err := utils.Decode[reqBody](r)
 		if err != nil {
-			utils.Encode(w, r, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
+			utils.Encode(w, http.StatusBadRequest, map[string]string{"message": "failed to decode request body"})
 			return
 		}
 
@@ -33,13 +33,13 @@ func CreateOne(
 			validation.Field(&body.VaultName, validation.Required, validation.Length(minVaultNameLength, maxVaultNameLength)),
 		)
 		if err != nil {
-			utils.Encode(w, r, http.StatusBadRequest, err)
+			utils.Encode(w, http.StatusBadRequest, err)
 			return
 		}
 
 		err = vaultService.CreateOne(r.Context(), user.ID, body.VaultName)
 		if err != nil {
-			utils.Encode(w, r, http.StatusInternalServerError, err.Error())
+			utils.Encode(w, http.StatusInternalServerError, err.Error())
 		}
 
 		w.WriteHeader(http.StatusNoContent)

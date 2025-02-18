@@ -12,6 +12,6 @@ func GetUserInfo(
 	userService *services.UserService,
 ) func(w http.ResponseWriter, r *http.Request, user *models.User) {
 	return func(w http.ResponseWriter, r *http.Request, user *models.User) {
-		utils.Encode(w, r, http.StatusOK, user)
+		utils.Encode(w, http.StatusOK, user)
 	}
 }

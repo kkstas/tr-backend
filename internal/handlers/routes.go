@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"log/slog"
 	"net/http"
 
@@ -17,7 +16,6 @@ import (
 func SetupRoutes(
 	cfg *config.Config,
 	logger *slog.Logger,
-	db *sql.DB,
 	userService *services.UserService,
 	vaultService *services.VaultService,
 ) http.Handler {
@@ -37,6 +35,7 @@ func SetupRoutes(
 	mux.Handle("POST /vaults", requireAuth(withUser(vault.CreateOne(vaultService))))
 	mux.Handle("GET /vaults", requireAuth(withUser(vault.FindAll(vaultService))))
 	mux.Handle("DELETE /vaults/{id}", requireAuth(withUser(vault.DeleteOneByID(logger, vaultService))))
+	mux.Handle("POST /vaults/{vaultID}/users", requireAuth(withUser(vault.AddUser(vaultService))))
 
 	return mux
 }

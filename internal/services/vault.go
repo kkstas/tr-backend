@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -10,8 +9,9 @@ import (
 	"github.com/kkstas/tr-backend/internal/repositories"
 )
 
-var ErrVaultNotFound = errors.New("user not found")
+var ErrVaultNotFound = errors.New("vault not found")
 var ErrInsufficientVaultPermissions = errors.New("insufficient permissions to perform this vault operation")
+var ErrUserAlreadyAssignedToVault = errors.New("user is already assigned to this vault")
 
 type VaultService struct {
 	vaultRepo   *repositories.VaultRepo
@@ -54,7 +54,7 @@ func (s *VaultService) FindOneByID(ctx context.Context, userID, vaultID string) 
 func (s *VaultService) DeleteOneByID(ctx context.Context, userID, vaultID string) error {
 	foundVault, err := s.vaultRepo.FindOneByID(ctx, userID, vaultID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, repositories.ErrVaultNotFound) {
 			return ErrVaultNotFound
 		}
 		return err
@@ -69,4 +69,21 @@ func (s *VaultService) DeleteOneByID(ctx context.Context, userID, vaultID string
 	}
 	return nil
 
+}
+
+func (s *VaultService) AddUser(ctx context.Context, userID, invitedUserID, vaultID string, userRole models.VaultRole) error {
+	_, err := s.vaultRepo.FindOneByID(ctx, invitedUserID, vaultID)
+	if err == nil {
+		return ErrUserAlreadyAssignedToVault
+	}
+
+	foundVault, err := s.vaultRepo.FindOneByID(ctx, userID, vaultID)
+	if err != nil {
+		if errors.Is(err, repositories.ErrVaultNotFound) {
+			return ErrVaultNotFound
+		}
+		return fmt.Errorf("failed to find user vault: %w", err)
+	}
+
+	return s.vaultRepo.AddUser(ctx, foundVault.ID, invitedUserID, userRole)
 }

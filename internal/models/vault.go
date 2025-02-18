@@ -3,7 +3,8 @@ package models
 type VaultRole string
 
 const (
-	VaultRoleOwner VaultRole = "owner"
+	VaultRoleOwner  VaultRole = "owner"
+	VaultRoleEditor VaultRole = "editor"
 )
 
 type Vault struct {

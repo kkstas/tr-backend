@@ -3,11 +3,15 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/kkstas/tr-backend/internal/models"
 )
+
+var ErrVaultNotFound = errors.New("vault not found")
 
 type VaultRepo struct {
 	db *sql.DB
@@ -83,6 +87,10 @@ func (r *VaultRepo) FindOneByID(ctx context.Context, userID, vaultID string) (*m
 		WHERE v.id = $1 AND uv.user_id = $2
 		`, vaultID, userID).Scan(&v.ID, &v.Name, &v.UserRole)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrVaultNotFound
+		}
+
 		return nil, err
 	}
 
@@ -92,4 +100,13 @@ func (r *VaultRepo) FindOneByID(ctx context.Context, userID, vaultID string) (*m
 func (r *VaultRepo) DeleteOneByID(ctx context.Context, vaultID string) error {
 	_, err := r.db.ExecContext(ctx, `DELETE FROM vaults WHERE vaults.id = $1`, vaultID)
 	return err
+}
+
+func (r *VaultRepo) AddUser(ctx context.Context, vaultID, userID string, userRole models.VaultRole) error {
+	_, err := r.db.ExecContext(ctx, `INSERT INTO user_vaults(user_id, vault_id, role) VALUES ($1, $2, $3)`, userID, vaultID, userRole)
+	if err != nil {
+		return fmt.Errorf("failed to add user %s to vault %s: %w", userID, vaultID, err)
+	}
+
+	return nil
 }

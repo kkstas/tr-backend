@@ -31,7 +31,7 @@ func NewApplication(
 	vaultRepo := repositories.NewVaultRepo(db)
 	vaultService := services.NewVaultService(vaultRepo, userService)
 
-	mux := handlers.SetupRoutes(config, logger, db, userService, vaultService)
+	mux := handlers.SetupRoutes(config, logger, userService, vaultService)
 
 	app.Handler = middleware.LogHttp(logger, mux)
 

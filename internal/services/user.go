@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -36,18 +35,17 @@ func (s *UserService) CreateOne(ctx context.Context, firstName, lastName, email,
 	if err == nil {
 		return ErrUserEmailAlreadyExists
 	}
-	if !errors.Is(err, sql.ErrNoRows) {
+	if !errors.Is(err, repositories.ErrUserNotFound) {
 		return fmt.Errorf("failed to find user before creating one: %w", err)
-
 	}
 
 	return s.userRepo.CreateOne(ctx, firstName, lastName, email, passwordHash)
 }
 
-func (u *UserService) FindPasswordHashAndUserIDForEmail(ctx context.Context, email string) (passwordHash, userID string, err error) {
-	passwordHash, userID, err = u.userRepo.FindPasswordHashAndUserIDForEmail(ctx, email)
+func (s *UserService) FindPasswordHashAndUserIDForEmail(ctx context.Context, email string) (passwordHash, userID string, err error) {
+	passwordHash, userID, err = s.userRepo.FindPasswordHashAndUserIDForEmail(ctx, email)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, repositories.ErrUserNotFound) {
 			return "", "", ErrUserNotFound
 		}
 		return "", "", fmt.Errorf("failed to find password hash: %w", err)
@@ -57,7 +55,7 @@ func (u *UserService) FindPasswordHashAndUserIDForEmail(ctx context.Context, ema
 
 func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User, error) {
 	user, err := s.userRepo.FindOneByID(ctx, id)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, repositories.ErrUserNotFound) {
 		return nil, ErrUserNotFound
 	}
 
@@ -66,7 +64,7 @@ func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User,
 
 func (s *UserService) FindOneByEmail(ctx context.Context, email string) (*models.User, error) {
 	user, err := s.userRepo.FindOneByEmail(ctx, email)
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, repositories.ErrUserNotFound) {
 		return nil, ErrUserNotFound
 	}
 

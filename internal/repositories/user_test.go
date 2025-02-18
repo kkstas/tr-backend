@@ -2,7 +2,6 @@ package repositories_test
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"testing"
 
@@ -100,8 +99,8 @@ func TestFindOneUserByID(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected an error but didn't get one")
 		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			t.Errorf("expected error '%v', got '%v'", sql.ErrNoRows, err)
+		if !errors.Is(err, repositories.ErrUserNotFound) {
+			t.Errorf("expected error '%v', got '%v'", repositories.ErrUserNotFound, err)
 		}
 	})
 }
@@ -144,8 +143,8 @@ func TestFindOneUserByEmail(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected an error but didn't get one")
 		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			t.Errorf("expected error '%v', got '%v'", sql.ErrNoRows, err)
+		if !errors.Is(err, repositories.ErrUserNotFound) {
+			t.Errorf("expected error '%v', got '%v'", repositories.ErrUserNotFound, err)
 		}
 	})
 }

@@ -3,12 +3,15 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 
 	"github.com/kkstas/tr-backend/internal/models"
 )
+
+var ErrUserNotFound = errors.New("user not found")
 
 type UserRepo struct {
 	db *sql.DB
@@ -18,8 +21,8 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 	return &UserRepo{db: db}
 }
 
-func (u *UserRepo) CreateOne(ctx context.Context, firstName, lastName, email, passwordHash string) error {
-	_, err := u.db.ExecContext(ctx, `
+func (r *UserRepo) CreateOne(ctx context.Context, firstName, lastName, email, passwordHash string) error {
+	_, err := r.db.ExecContext(ctx, `
 		INSERT INTO users(id, first_name, last_name, email, password_hash)
 		VALUES ($1, $2, $3, $4, $5);`,
 		uuid.New().String(), firstName, lastName, email, passwordHash)
@@ -29,9 +32,12 @@ func (u *UserRepo) CreateOne(ctx context.Context, firstName, lastName, email, pa
 	return nil
 }
 
-func (u *UserRepo) FindPasswordHashAndUserIDForEmail(ctx context.Context, email string) (passwordHash, userID string, err error) {
-	err = u.db.QueryRowContext(ctx, `SELECT u.id, u.password_hash FROM users u WHERE u.email = $1;`, email).Scan(&userID, &passwordHash)
+func (r *UserRepo) FindPasswordHashAndUserIDForEmail(ctx context.Context, email string) (passwordHash, userID string, err error) {
+	err = r.db.QueryRowContext(ctx, `SELECT u.id, u.password_hash FROM users u WHERE u.email = $1;`, email).Scan(&userID, &passwordHash)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", "", ErrUserNotFound
+		}
 		return "", "", fmt.Errorf("failed to find user password hash: %w", err)
 	}
 	return passwordHash, userID, nil
@@ -74,6 +80,9 @@ func (r *UserRepo) FindOneByID(ctx context.Context, id string) (*models.User, er
 		`, id).
 		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &activeVault, &user.CreatedAt)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
 		return nil, fmt.Errorf("failed to find user by ID: %w", err)
 	}
 
@@ -95,6 +104,9 @@ func (r *UserRepo) FindOneByEmail(ctx context.Context, email string) (*models.Us
 		`, email).
 		Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &activeVault, &user.CreatedAt)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
 		return nil, fmt.Errorf("failed to find user by email: %w", err)
 	}
 

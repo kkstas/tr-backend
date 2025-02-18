@@ -34,7 +34,7 @@ func NewTestAppWithConfig(t testing.TB, config *config.Config) (newApp http.Hand
 	db = OpenTestDB(t, ctx)
 	t.Cleanup(cancel)
 
-	newApp = app.NewApplication(ctx, config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	newApp = app.NewApplication(config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
 	return newApp, db
 

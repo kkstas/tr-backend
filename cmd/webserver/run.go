@@ -30,7 +30,7 @@ func run(ctx context.Context, getenv func(string) string) error {
 	}
 	defer db.Close()
 
-	app := app.NewApplication(ctx, appConfig, db, initLogger(os.Stdout))
+	app := app.NewApplication(appConfig, db, initLogger(os.Stdout))
 
 	server := &http.Server{
 		Addr:              ":" + config.port,

@@ -16,7 +16,7 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 	lrw.ResponseWriter.WriteHeader(code)
 }
 
-func LogHttp(logger *slog.Logger, next http.Handler) http.Handler {
+func LogHTTP(logger *slog.Logger, next http.Handler) http.Handler {
 	httpLogger := func(r *http.Request, lrw *loggingResponseWriter, start time.Time) {
 		logger.LogAttrs(r.Context(),
 			slog.LevelDebug,

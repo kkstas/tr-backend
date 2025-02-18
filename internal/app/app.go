@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"database/sql"
 	"log/slog"
 	"net/http"
@@ -18,7 +17,6 @@ type Application struct {
 }
 
 func NewApplication(
-	ctx context.Context,
 	config *config.Config,
 	db *sql.DB,
 	logger *slog.Logger,
@@ -33,7 +31,7 @@ func NewApplication(
 
 	mux := handlers.SetupRoutes(config, logger, userService, vaultService)
 
-	app.Handler = middleware.LogHttp(logger, mux)
+	app.Handler = middleware.LogHTTP(logger, mux)
 
 	return app
 }

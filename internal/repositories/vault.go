@@ -27,7 +27,7 @@ func (r *VaultRepo) CreateOne(ctx context.Context, userID string, userRole model
 		return "", fmt.Errorf("failed to create vault: %w", err)
 	}
 
-	defer tx.Rollback()
+	defer tx.Rollback() // nolint: errcheck
 
 	vaultID = uuid.New().String()
 
@@ -79,7 +79,7 @@ func (r *VaultRepo) FindAll(ctx context.Context, userID string) ([]models.UserVa
 }
 
 func (r *VaultRepo) FindOneByID(ctx context.Context, userID, vaultID string) (*models.UserVaultWithRole, error) {
-	v := models.UserVaultWithRole{}
+	v := models.UserVaultWithRole{} // nolint: exhaustruct
 
 	err := r.db.QueryRowContext(ctx, `
 		SELECT v.id, v.name, uv.role FROM vaults v

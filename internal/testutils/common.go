@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	_ "modernc.org/sqlite"
+	_ "modernc.org/sqlite" // nolint: revive
 
 	"github.com/kkstas/tr-backend/internal/app"
 	"github.com/kkstas/tr-backend/internal/auth"
@@ -34,6 +34,7 @@ func NewTestAppWithConfig(t testing.TB, config *config.Config) (newApp http.Hand
 	db = OpenTestDB(t, ctx)
 	t.Cleanup(cancel)
 
+	// nolint: exhaustruct
 	newApp = app.NewApplication(config, db, slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelWarn})))
 
 	return newApp, db
@@ -48,7 +49,7 @@ func NewTestApplication(t testing.TB) (newApp http.Handler, db *sql.DB) {
 	return NewTestAppWithConfig(t, config)
 }
 
-func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) {
+func OpenTestDB(t testing.TB, ctx context.Context) (db *sql.DB) { // nolint: revive
 	dbName := fmt.Sprintf("test-%s.db", RandomString(32))
 	db, err := database.OpenDB(ctx, dbName)
 	if err != nil {
@@ -92,7 +93,7 @@ func RandomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, length)
 	for i := range result {
-		result[i] = charset[rand.Intn(len(charset))]
+		result[i] = charset[rand.Intn(len(charset))] // nolint: gosec // using this instead of crypto/rand since it's only for testing
 	}
 	return string(result)
 }
@@ -155,7 +156,7 @@ func AssertNotEmpty[T any](t testing.TB, got T) {
 		return
 	}
 
-	switch v.Kind() {
+	switch v.Kind() { // nolint: exhaustive
 	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
 		if v.Len() == 0 {
 			t.Errorf("expected a non-empty %T but got empty", got)

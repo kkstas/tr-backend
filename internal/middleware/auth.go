@@ -41,7 +41,7 @@ func RequireAuth(
 				return
 			}
 
-			jwtClaims := JWTClaims{}
+			jwtClaims := JWTClaims{} // nolint: exhaustruct
 
 			claims := token.Claims.(jwt.MapClaims)
 

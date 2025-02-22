@@ -172,7 +172,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("disables endpoint if enableRegister is set to false", func(t *testing.T) {
 		t.Parallel()
-		serv, _ := testutils.NewTestAppWithConfig(t, &config.Config{EnableRegister: false})
+		serv, _ := testutils.NewTestAppWithConfig(t, &config.Config{EnableRegister: false, JWTSecretKey: []byte("secret-key")})
 
 		request := httptest.NewRequest("POST", "/register", testutils.ToJSONBuffer(t, ""))
 		response := httptest.NewRecorder()

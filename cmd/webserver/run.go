@@ -32,7 +32,7 @@ func run(ctx context.Context, getenv func(string) string) error {
 
 	app := app.NewApplication(appConfig, db, initLogger(os.Stdout))
 
-	server := &http.Server{
+	server := &http.Server{ // nolint: exhaustruct
 		Addr:              ":" + config.port,
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           app,
@@ -48,6 +48,6 @@ func run(ctx context.Context, getenv func(string) string) error {
 func initLogger(w io.Writer) *slog.Logger {
 	return slog.New(slog.NewJSONHandler(
 		w,
-		&slog.HandlerOptions{Level: slog.LevelDebug},
+		&slog.HandlerOptions{Level: slog.LevelDebug}, // nolint: exhaustruct
 	))
 }

@@ -31,7 +31,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 			password_hash TEXT NOT NULL,
 			created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (active_vault) REFERENCES vaults(id) ON DELETE SET NULL
-		);
+		)
 	`)
 	if err != nil {
 		return fmt.Errorf("failed to create users table: %w", err)
@@ -42,7 +42,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 			id          TEXT PRIMARY KEY,
 			name        TEXT NOT NULL,
 			created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-		);
+		)
 	`)
 	if err != nil {
 		return fmt.Errorf("failed to create vaults table: %w", err)
@@ -57,7 +57,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 			PRIMARY KEY (user_id, vault_id),
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 			FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE
-		);
+		)
 	`)
 	if err != nil {
 		return fmt.Errorf("failed to create vaults table: %w", err)
@@ -67,13 +67,14 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 		CREATE TABLE IF NOT EXISTS expense_categories (
 			id         TEXT PRIMARY KEY,
 			name       TEXT NOT NULL UNIQUE,
+			status     TEXT DEFAULT 'active',
 			priority   INTEGER NOT NULL,
 			vault_id   TEXT NOT NULL,
 			created_by TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
 			FOREIGN KEY (created_by) REFERENCES users(id)
-		);
+		)
 	`)
 	if err != nil {
 		return fmt.Errorf("failed to create expense_categories table: %w", err)
@@ -93,7 +94,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 			FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
 			FOREIGN KEY (created_by) REFERENCES users(id),
 			FOREIGN KEY (category_id) REFERENCES expense_categories(id)
-		);
+		)
 	`)
 
 	if err != nil {

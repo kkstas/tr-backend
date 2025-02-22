@@ -74,6 +74,10 @@ func NewTestVaultService(db *sql.DB) *services.VaultService {
 	return services.NewVaultService(repositories.NewVaultRepo(db), NewTestUserService(db))
 }
 
+func NewTestExpenseCategoryService(db *sql.DB) *services.ExpenseCategoryService {
+	return services.NewExpenseCategoryService(repositories.NewExpenseCategoryRepo(db), NewTestVaultService(db))
+}
+
 func CreateUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.User) {
 	userService := NewTestUserService(db)
 	userEmail := RandomString(16) + "@email.com"

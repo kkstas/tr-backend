@@ -66,7 +66,7 @@ func initDBTables(ctx context.Context, db *sql.DB) error {
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS expense_categories (
 			id         TEXT PRIMARY KEY,
-			name       TEXT NOT NULL UNIQUE,
+			name       TEXT NOT NULL,
 			status     TEXT DEFAULT 'active',
 			priority   INTEGER NOT NULL,
 			vault_id   TEXT NOT NULL,

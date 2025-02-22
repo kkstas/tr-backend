@@ -54,8 +54,9 @@ func TestUserService_CreateOne(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected an error but didn't get one")
 		}
-		if !errors.Is(err, services.ErrUserEmailAlreadyExists) {
-			t.Errorf("expected error '%v', got '%v'", services.ErrUserEmailAlreadyExists, err)
+		want := services.ErrUserEmailAlreadyExists
+		if !errors.Is(err, want) {
+			t.Errorf("expected error '%v', got '%v'", want, err)
 		}
 	})
 }

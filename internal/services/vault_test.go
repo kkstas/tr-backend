@@ -50,8 +50,9 @@ func TestFindOneByID(t *testing.T) {
 			t.Error("expected an error but didn't get one")
 		}
 
-		if !errors.Is(err, services.ErrVaultNotFound) {
-			t.Errorf("expected error '%v', got '%v'", services.ErrVaultNotFound, err)
+		want := services.ErrVaultNotFound
+		if !errors.Is(err, want) {
+			t.Errorf("expected error '%v', got '%v'", want, err)
 		}
 	})
 }

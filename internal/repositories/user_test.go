@@ -99,8 +99,10 @@ func TestFindOneUserByID(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected an error but didn't get one")
 		}
-		if !errors.Is(err, repositories.ErrUserNotFound) {
-			t.Errorf("expected error '%v', got '%v'", repositories.ErrUserNotFound, err)
+
+		want := repositories.ErrUserNotFound
+		if !errors.Is(err, want) {
+			t.Errorf("expected error '%v', got '%v'", want, err)
 		}
 	})
 }
@@ -143,8 +145,9 @@ func TestFindOneUserByEmail(t *testing.T) {
 		if err == nil {
 			t.Errorf("expected an error but didn't get one")
 		}
-		if !errors.Is(err, repositories.ErrUserNotFound) {
-			t.Errorf("expected error '%v', got '%v'", repositories.ErrUserNotFound, err)
+		want := repositories.ErrUserNotFound
+		if !errors.Is(err, want) {
+			t.Errorf("expected error '%v', got '%v'", want, err)
 		}
 	})
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
-func TestFindOneByID(t *testing.T) {
+func TestVaultService_FindOneByID(t *testing.T) {
 	t.Parallel()
 
 	t.Run("finds one vault for user", func(t *testing.T) {
@@ -52,7 +52,7 @@ func TestFindOneByID(t *testing.T) {
 
 		want := services.ErrVaultNotFound
 		if !errors.Is(err, want) {
-			t.Errorf("expected error '%v', got '%v'", want, err)
+			t.Errorf("expected error %q, got %v", want, err)
 		}
 	})
 }
@@ -126,6 +126,93 @@ func TestVaultService_DeleteOneByID(t *testing.T) {
 
 		if newUserData.ActiveVault != "" {
 			t.Errorf("expected user's active vault to be empty string after deleting the vault, got %s", newUserData.ActiveVault)
+		}
+	})
+}
+
+func TestVaultService_AddUser(t *testing.T) {
+	t.Parallel()
+
+	t.Run("adds user to vault", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		_, vaultOwner := testutils.CreateUserWithToken(t, db)
+		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultService := testutils.NewTestVaultService(db)
+
+		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
+		testutils.AssertNoError(t, err)
+
+		foundVaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, len(foundVaults), 1)
+
+		err = vaultService.AddUser(ctx, vaultOwner.ID, invitee.ID, foundVaults[0].ID, models.VaultRoleEditor)
+		if err != nil {
+			t.Errorf("didn't expect an error, but got one: %v", err)
+		}
+
+		inviteeVault, err := vaultService.FindOneByID(ctx, invitee.ID, foundVaults[0].ID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertNotEmpty(t, inviteeVault)
+		testutils.AssertEqual(t, inviteeVault.UserRole, models.VaultRoleEditor)
+	})
+
+	t.Run("returns error if inviter is not a vault owner", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		_, vaultOwner := testutils.CreateUserWithToken(t, db)
+		_, inviter := testutils.CreateUserWithToken(t, db)
+		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultService := testutils.NewTestVaultService(db)
+
+		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
+		testutils.AssertNoError(t, err)
+
+		foundVaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, len(foundVaults), 1)
+
+		err = vaultService.AddUser(ctx, vaultOwner.ID, inviter.ID, foundVaults[0].ID, models.VaultRoleEditor)
+		testutils.AssertNoError(t, err)
+
+		err = vaultService.AddUser(ctx, inviter.ID, invitee.ID, foundVaults[0].ID, models.VaultRoleEditor)
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+
+		want := services.ErrInsufficientVaultPermissions
+		if !errors.Is(err, want) {
+			t.Errorf("expected error %q, got %v", want, err)
+		}
+	})
+
+	t.Run("returns error if inviter does not belong to this vault", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		_, vaultOwner := testutils.CreateUserWithToken(t, db)
+		_, inviter := testutils.CreateUserWithToken(t, db)
+		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultService := testutils.NewTestVaultService(db)
+
+		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
+		testutils.AssertNoError(t, err)
+
+		foundVaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, len(foundVaults), 1)
+
+		err = vaultService.AddUser(ctx, inviter.ID, invitee.ID, foundVaults[0].ID, models.VaultRoleEditor)
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+
+		want := services.ErrVaultNotFound
+		if !errors.Is(err, want) {
+			t.Errorf("expected error %q, got %v", want, err)
 		}
 	})
 }

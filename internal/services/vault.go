@@ -84,7 +84,7 @@ func (s *VaultService) AddUser(ctx context.Context, userID, invitedUserID, vault
 		return ErrUserAlreadyAssignedToVault
 	}
 
-	foundVault, err := s.vaultRepo.FindOneByID(ctx, userID, vaultID)
+	userVaultWithRole, err := s.vaultRepo.FindOneByID(ctx, userID, vaultID)
 	if err != nil {
 		if errors.Is(err, repositories.ErrVaultNotFound) {
 			return ErrVaultNotFound
@@ -92,5 +92,9 @@ func (s *VaultService) AddUser(ctx context.Context, userID, invitedUserID, vault
 		return fmt.Errorf("failed to find user vault: %w", err)
 	}
 
-	return s.vaultRepo.AddUser(ctx, foundVault.ID, invitedUserID, userRole)
+	if userVaultWithRole.UserRole != models.VaultRoleOwner {
+		return ErrInsufficientVaultPermissions
+	}
+
+	return s.vaultRepo.AddUser(ctx, userVaultWithRole.ID, invitedUserID, userRole)
 }

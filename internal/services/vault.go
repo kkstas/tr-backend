@@ -48,7 +48,14 @@ func (s *VaultService) FindAll(ctx context.Context, userID string) ([]models.Use
 }
 
 func (s *VaultService) FindOneByID(ctx context.Context, userID, vaultID string) (*models.UserVaultWithRole, error) {
-	return s.vaultRepo.FindOneByID(ctx, userID, vaultID)
+	vault, err := s.vaultRepo.FindOneByID(ctx, userID, vaultID)
+	if err != nil {
+		if errors.Is(err, repositories.ErrVaultNotFound) {
+			return nil, ErrVaultNotFound
+		}
+		return nil, fmt.Errorf("failed to find vault %s for user %s: %w", vaultID, userID, err)
+	}
+	return vault, nil
 }
 
 func (s *VaultService) DeleteOneByID(ctx context.Context, userID, vaultID string) error {

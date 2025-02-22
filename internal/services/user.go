@@ -55,8 +55,11 @@ func (s *UserService) FindPasswordHashAndUserIDForEmail(ctx context.Context, ema
 
 func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User, error) {
 	user, err := s.userRepo.FindOneByID(ctx, id)
-	if errors.Is(err, repositories.ErrUserNotFound) {
-		return nil, ErrUserNotFound
+	if err != nil {
+		if errors.Is(err, repositories.ErrUserNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to find user by id %s: %w", id, err)
 	}
 
 	return user, nil
@@ -64,8 +67,11 @@ func (s *UserService) FindOneByID(ctx context.Context, id string) (*models.User,
 
 func (s *UserService) FindOneByEmail(ctx context.Context, email string) (*models.User, error) {
 	user, err := s.userRepo.FindOneByEmail(ctx, email)
-	if errors.Is(err, repositories.ErrUserNotFound) {
-		return nil, ErrUserNotFound
+	if err != nil {
+		if errors.Is(err, repositories.ErrUserNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to find user by email %s: %w", email, err)
 	}
 
 	return user, nil

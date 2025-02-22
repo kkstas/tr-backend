@@ -2,9 +2,12 @@ package services_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/kkstas/tr-backend/internal/models"
+	"github.com/kkstas/tr-backend/internal/services"
 	"github.com/kkstas/tr-backend/internal/testutils"
 )
 
@@ -33,6 +36,23 @@ func TestFindOneByID(t *testing.T) {
 		testutils.AssertEqual(t, foundVault.ID, vaults[0].ID)
 		testutils.AssertEqual(t, foundVault.Name, vaultName)
 		testutils.AssertEqual(t, foundVault.UserRole, models.VaultRoleOwner)
+	})
+
+	t.Run("returns error when no vault with given id is found", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		vaultService := testutils.NewTestVaultService(db)
+		_, createdUser := testutils.CreateUserWithToken(t, db)
+
+		_, err := vaultService.FindOneByID(ctx, createdUser.ID, uuid.New().String())
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+
+		if !errors.Is(err, services.ErrVaultNotFound) {
+			t.Errorf("expected error '%v', got '%v'", services.ErrVaultNotFound, err)
+		}
 	})
 }
 

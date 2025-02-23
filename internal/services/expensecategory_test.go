@@ -20,7 +20,7 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, user.ID, "vault name")
 		testutils.AssertNoError(t, err)
 
@@ -41,8 +41,8 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, user := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
 		testutils.AssertNoError(t, err)
 
@@ -63,8 +63,8 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, user := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
 		testutils.AssertNoError(t, err)
 
@@ -92,7 +92,7 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, user.ID, "vault name")
 		testutils.AssertNoError(t, err)
 
@@ -126,7 +126,7 @@ func TestExpenseCategoryService_FindAll(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, user.ID, "vault name")
 		testutils.AssertNoError(t, err)
 
@@ -159,8 +159,8 @@ func TestExpenseCategoryService_FindAll(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, user := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		user := testutils.CreateTestUser(t, db)
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
 		testutils.AssertNoError(t, err)
 

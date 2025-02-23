@@ -17,7 +17,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("creates new vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		vaultFC := struct {
 			VaultName string `json:"vaultName"`
@@ -41,7 +41,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("vault id is saved as user's active vault if user had no active vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		vaultFC := struct {
 			VaultName string `json:"vaultName"`
@@ -70,7 +70,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("returns 400 with error message if request body is invalid", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, _ := testutils.CreateUserWithToken(t, db)
+		token, _ := testutils.CreateTestUserWithToken(t, db)
 		request := httptest.NewRequest("POST", "/vaults",
 			testutils.ToJSONBuffer(t, struct {
 				VaultName string `json:"vaultName"`
@@ -97,7 +97,7 @@ func TestCreateOne(t *testing.T) {
 	t.Run("returns 400 with error message in response body if no body in the request", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, _ := testutils.CreateUserWithToken(t, db)
+		token, _ := testutils.CreateTestUserWithToken(t, db)
 		request := httptest.NewRequest("POST", "/vaults", nil)
 		request.Header.Set("Authorization", "Bearer "+token)
 		response := httptest.NewRecorder()

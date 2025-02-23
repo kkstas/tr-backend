@@ -19,14 +19,14 @@ func TestFindAll(t *testing.T) {
 		serv, db := testutils.NewTestApplication(t)
 
 		// create vault for user
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		err := testutils.NewTestVaultService(db).CreateOne(context.Background(), user.ID, "name")
 		testutils.AssertNoError(t, err)
 
 		// also create vault for other user that should not be returned
 		{
-			_, otherUser := testutils.CreateUserWithToken(t, db)
+			otherUser := testutils.CreateTestUser(t, db)
 			err := testutils.NewTestVaultService(db).CreateOne(context.Background(), otherUser.ID, "asdf")
 			testutils.AssertNoError(t, err)
 		}
@@ -48,7 +48,7 @@ func TestFindAll(t *testing.T) {
 	t.Run("returns empty array if no user vaults are found", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, _ := testutils.CreateUserWithToken(t, db)
+		token, _ := testutils.CreateTestUserWithToken(t, db)
 
 		request := httptest.NewRequest("GET", "/vaults", nil)
 		request.Header.Set("Authorization", "Bearer "+token)

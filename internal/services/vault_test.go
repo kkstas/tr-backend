@@ -19,7 +19,7 @@ func TestVaultService_FindOneByID(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		vaultService := testutils.NewTestVaultService(db)
-		_, createdUser := testutils.CreateUserWithToken(t, db)
+		createdUser := testutils.CreateTestUser(t, db)
 
 		vaultName := "some vault"
 
@@ -43,7 +43,7 @@ func TestVaultService_FindOneByID(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		vaultService := testutils.NewTestVaultService(db)
-		_, createdUser := testutils.CreateUserWithToken(t, db)
+		createdUser := testutils.CreateTestUser(t, db)
 
 		_, err := vaultService.FindOneByID(ctx, createdUser.ID, uuid.New().String())
 		if err == nil {
@@ -66,7 +66,7 @@ func TestVaultService_CreateOne(t *testing.T) {
 		db := testutils.OpenTestDB(t, ctx)
 		userService := testutils.NewTestUserService(db)
 		vaultService := testutils.NewTestVaultService(db)
-		_, createdUser := testutils.CreateUserWithToken(t, db)
+		createdUser := testutils.CreateTestUser(t, db)
 
 		vaultName := "some vault"
 
@@ -97,7 +97,7 @@ func TestVaultService_CreateOne(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		vaultService := testutils.NewTestVaultService(db)
-		_, createdUser := testutils.CreateUserWithToken(t, db)
+		createdUser := testutils.CreateTestUser(t, db)
 
 		vaultName := "some vault"
 
@@ -123,7 +123,7 @@ func TestVaultService_DeleteOneByID(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, createdUser := testutils.CreateUserWithToken(t, db)
+		createdUser := testutils.CreateTestUser(t, db)
 		userService := testutils.NewTestUserService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
@@ -161,8 +161,8 @@ func TestVaultService_AddUser(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		invitee := testutils.CreateTestUser(t, db)
 		vaultService := testutils.NewTestVaultService(db)
 
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
@@ -187,9 +187,9 @@ func TestVaultService_AddUser(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, inviter := testutils.CreateUserWithToken(t, db)
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		inviter := testutils.CreateTestUser(t, db)
+		invitee := testutils.CreateTestUser(t, db)
 		vaultService := testutils.NewTestVaultService(db)
 
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
@@ -217,9 +217,9 @@ func TestVaultService_AddUser(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, vaultOwner := testutils.CreateUserWithToken(t, db)
-		_, inviter := testutils.CreateUserWithToken(t, db)
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		vaultOwner := testutils.CreateTestUser(t, db)
+		inviter := testutils.CreateTestUser(t, db)
+		invitee := testutils.CreateTestUser(t, db)
 		vaultService := testutils.NewTestVaultService(db)
 
 		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")

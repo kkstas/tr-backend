@@ -18,8 +18,8 @@ func TestAddUserToVault(t *testing.T) {
 	t.Run("adds user to vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		inviterToken, _ := testutils.CreateUserWithToken(t, db)
-		inviteeToken, invitee := testutils.CreateUserWithToken(t, db)
+		inviterToken, _ := testutils.CreateTestUserWithToken(t, db)
+		inviteeToken, invitee := testutils.CreateTestUserWithToken(t, db)
 
 		var createdVaultID string
 
@@ -77,8 +77,8 @@ func TestAddUserToVault(t *testing.T) {
 	t.Run("returns 404 if vault does not exist", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		inviterToken, _ := testutils.CreateUserWithToken(t, db)
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		inviterToken, _ := testutils.CreateTestUserWithToken(t, db)
+		_, invitee := testutils.CreateTestUserWithToken(t, db)
 
 		invitationReqBody := struct {
 			UserID string           `json:"userID"`
@@ -100,8 +100,8 @@ func TestAddUserToVault(t *testing.T) {
 	t.Run("returns 400 if user has already been assigned to this vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		inviterToken, _ := testutils.CreateUserWithToken(t, db)
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		inviterToken, _ := testutils.CreateTestUserWithToken(t, db)
+		_, invitee := testutils.CreateTestUserWithToken(t, db)
 
 		var createdVaultID string
 

@@ -18,7 +18,7 @@ func TestExpenseCategoryRepo_FindAll(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
 		testutils.AssertNoError(t, err)
@@ -51,7 +51,7 @@ func TestExpenseCategoryRepo_CreateOne(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
 		testutils.AssertNoError(t, err)

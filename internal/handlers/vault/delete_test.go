@@ -15,7 +15,7 @@ func TestDeleteOneByID(t *testing.T) {
 	t.Run("deletes existing vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		vaultService := testutils.NewTestVaultService(db)
 		err := vaultService.CreateOne(context.Background(), user.ID, "some vault name")
@@ -40,7 +40,7 @@ func TestDeleteOneByID(t *testing.T) {
 	t.Run("does not delete existing vault if user is not assigned to the vault", func(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultService := testutils.NewTestVaultService(db)
 		err := vaultService.CreateOne(context.Background(), user.ID, "some vault name")
@@ -50,7 +50,7 @@ func TestDeleteOneByID(t *testing.T) {
 		testutils.AssertNoError(t, err)
 		testutils.AssertEqual(t, len(vaults), 1)
 
-		otherUserToken, _ := testutils.CreateUserWithToken(t, db)
+		otherUserToken, _ := testutils.CreateTestUserWithToken(t, db)
 		request := httptest.NewRequest("DELETE", "/vaults/"+vaults[0].ID, nil)
 		request.Header.Set("Authorization", "Bearer "+otherUserToken)
 		response := httptest.NewRecorder()

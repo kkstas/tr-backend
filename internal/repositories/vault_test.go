@@ -19,7 +19,7 @@ func TestVaultRepo_CreateOne(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 		vaultRepo := repositories.NewVaultRepo(db)
 
 		_, err := vaultRepo.CreateOne(ctx, user.ID, models.VaultRoleOwner, "some name")
@@ -38,7 +38,7 @@ func TestVaultRepo_FindAll(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultRepo := repositories.NewVaultRepo(db)
 
@@ -76,7 +76,7 @@ func TestVaultRepo_FindOneByID(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultRepo := repositories.NewVaultRepo(db)
 
@@ -103,7 +103,7 @@ func TestVaultRepo_FindOneByName(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultRepo := repositories.NewVaultRepo(db)
 
@@ -146,7 +146,7 @@ func TestVaultRepo_DeleteOneByID(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultRepo := repositories.NewVaultRepo(db)
 
@@ -169,7 +169,7 @@ func TestVaultRepo_AddUser(t *testing.T) {
 		t.Parallel()
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
-		_, user := testutils.CreateUserWithToken(t, db)
+		user := testutils.CreateTestUser(t, db)
 
 		vaultRepo := repositories.NewVaultRepo(db)
 
@@ -180,7 +180,7 @@ func TestVaultRepo_AddUser(t *testing.T) {
 		vaultID, err := vaultRepo.CreateOne(ctx, userID, userRole, vaultName)
 		testutils.AssertNoError(t, err)
 
-		_, invitee := testutils.CreateUserWithToken(t, db)
+		invitee := testutils.CreateTestUser(t, db)
 
 		inviteeRole := models.VaultRoleEditor
 		err = vaultRepo.AddUser(ctx, vaultID, invitee.ID, inviteeRole)

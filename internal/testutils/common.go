@@ -78,14 +78,19 @@ func NewTestExpenseCategoryService(db *sql.DB) *services.ExpenseCategoryService 
 	return services.NewExpenseCategoryService(repositories.NewExpenseCategoryRepo(db), NewTestVaultService(db))
 }
 
-func CreateUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.User) {
-	userService := NewTestUserService(db)
+func CreateTestUser(t testing.TB, db *sql.DB) *models.User {
+	userRepo := repositories.NewUserRepo(db)
 	userEmail := RandomString(16) + "@email.com"
-	err := userService.CreateOne(context.Background(), "firstName_"+RandomString(8), "lastName_"+RandomString(8), userEmail, "password")
+	err := userRepo.CreateOne(context.Background(), "firstName_"+RandomString(8), "lastName_"+RandomString(8), userEmail, "password")
 	AssertNoError(t, err)
 
-	createdUser, err := userService.FindOneByEmail(context.Background(), userEmail)
+	createdUser, err := userRepo.FindOneByEmail(context.Background(), userEmail)
 	AssertNoError(t, err)
+	return createdUser
+}
+
+func CreateTestUserWithToken(t testing.TB, db *sql.DB) (token string, user *models.User) {
+	createdUser := CreateTestUser(t, db)
 
 	tkn, err := auth.CreateToken(jwtKey, createdUser.ID)
 	AssertNoError(t, err)

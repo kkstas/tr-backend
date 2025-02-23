@@ -26,7 +26,7 @@ func TestGetUserInfo(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
 
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		request := httptest.NewRequest("GET", "/user", nil)
 		request.Header.Set("Authorization", "Bearer "+token)
@@ -52,7 +52,7 @@ func TestGetUserInfo(t *testing.T) {
 		t.Parallel()
 		serv, db := testutils.NewTestApplication(t)
 
-		token, user := testutils.CreateUserWithToken(t, db)
+		token, user := testutils.CreateTestUserWithToken(t, db)
 
 		{
 			vaultFC := struct {

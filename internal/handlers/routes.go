@@ -39,6 +39,7 @@ func SetupRoutes(
 	mux.Handle("DELETE /vaults/{id}", requireAuth(withUser(vault.DeleteOneByID(logger, vaultService))))
 	mux.Handle("POST /vaults/{vaultID}/users", requireAuth(withUser(vault.AddUser(vaultService))))
 
+	mux.Handle("GET /expensecategories/{vaultID}", requireAuth(withUser(expensecategory.FindAll(expenseCategoryService))))
 	mux.Handle("POST /expensecategories", requireAuth(withUser(expensecategory.CreateOne(expenseCategoryService))))
 
 	return mux

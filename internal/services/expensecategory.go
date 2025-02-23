@@ -50,7 +50,7 @@ func (s *ExpenseCategoryService) CreateOne(ctx context.Context, name string, use
 		return ErrExpenseCategoryWithThatNameAlreadyExists
 	}
 
-	err = s.expenseCategoryRepo.CreateOne(ctx, name, models.ExpenseCategoryStatusActive, 0, userVaultWithRole.ID, userID)
+	_, err = s.expenseCategoryRepo.CreateOne(ctx, name, models.ExpenseCategoryStatusActive, 0, userVaultWithRole.ID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to create expense category: %w", err)
 	}

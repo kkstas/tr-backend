@@ -3,11 +3,14 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/kkstas/tr-backend/internal/models"
 )
+
+var ErrExpenseCategoryNotFound = errors.New("expense category not found")
 
 type ExpenseCategoryRepo struct {
 	db *sql.DB
@@ -17,15 +20,17 @@ func NewExpenseCategoryRepo(db *sql.DB) *ExpenseCategoryRepo {
 	return &ExpenseCategoryRepo{db: db}
 }
 
-func (r *ExpenseCategoryRepo) CreateOne(ctx context.Context, name string, status models.ExpenseCategoryStatus, priority int, vaultID, createdBy string) error {
-	_, err := r.db.ExecContext(ctx, `
+func (r *ExpenseCategoryRepo) CreateOne(ctx context.Context, name string, status models.ExpenseCategoryStatus, priority int, vaultID, createdBy string) (categoryID string, err error) {
+	categoryID = uuid.New().String()
+
+	_, err = r.db.ExecContext(ctx, `
 		INSERT INTO expense_categories(id, name, status, priority, vault_id, created_by)
 		VALUES ($1, $2, $3, $4, $5, $6)`,
-		uuid.New().String(), name, status, priority, vaultID, createdBy)
+		categoryID, name, status, priority, vaultID, createdBy)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return categoryID, nil
 }
 
 func (r *ExpenseCategoryRepo) FindAll(ctx context.Context, vaultID string) ([]models.ExpenseCategory, error) {
@@ -54,4 +59,47 @@ func (r *ExpenseCategoryRepo) FindAll(ctx context.Context, vaultID string) ([]mo
 		return nil, err
 	}
 	return categories, nil
+}
+
+func (r *ExpenseCategoryRepo) FindOneByID(ctx context.Context, categoryID string) (*models.ExpenseCategory, error) {
+	category := models.ExpenseCategory{} // nolint: exhaustruct
+
+	err := r.db.QueryRowContext(ctx, `
+		SELECT id, name, status, priority, vault_id, created_by, created_at
+		FROM expense_categories
+		WHERE id = $1
+		`, categoryID).Scan(&category.ID, &category.Name, &category.Status, &category.Priority, &category.VaultID, &category.CreatedBy, &category.CreatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrExpenseCategoryNotFound
+		}
+
+		return nil, err
+	}
+
+	return &category, nil
+}
+
+func (r *ExpenseCategoryRepo) SetStatus(ctx context.Context, categoryID string, status models.ExpenseCategoryStatus) error {
+	_, err := r.db.ExecContext(ctx, `
+		UPDATE expense_categories
+		SET status = $1
+		WHERE id = $2`, status, categoryID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ExpenseCategoryRepo) SetPriority(ctx context.Context, categoryID string, priority int) error {
+	_, err := r.db.ExecContext(ctx, `
+		UPDATE expense_categories
+		SET priority = $1
+		WHERE id = $2`, priority, categoryID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -2,6 +2,7 @@ package repositories_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/google/uuid"
@@ -23,12 +24,12 @@ func TestExpenseCategoryRepo_FindAll(t *testing.T) {
 		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
 		testutils.AssertNoError(t, err)
 
-		err = expenseCategoryRepo.CreateOne(ctx, "category name", models.ExpenseCategoryStatusActive, 0, vaultID, user.ID)
+		_, err = expenseCategoryRepo.CreateOne(ctx, "category name", models.ExpenseCategoryStatusActive, 0, vaultID, user.ID)
 		testutils.AssertNoError(t, err)
 
-		foundVaults, err := expenseCategoryRepo.FindAll(ctx, vaultID)
+		foundCategories, err := expenseCategoryRepo.FindAll(ctx, vaultID)
 		testutils.AssertNoError(t, err)
-		testutils.AssertEqual(t, len(foundVaults), 1)
+		testutils.AssertEqual(t, len(foundCategories), 1)
 	})
 
 	t.Run("returns empty array if no categories are found", func(t *testing.T) {
@@ -37,9 +38,9 @@ func TestExpenseCategoryRepo_FindAll(t *testing.T) {
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
 
-		foundVaults, err := expenseCategoryRepo.FindAll(ctx, uuid.New().String())
+		foundCategories, err := expenseCategoryRepo.FindAll(ctx, uuid.New().String())
 		testutils.AssertNoError(t, err)
-		testutils.AssertEqual(t, len(foundVaults), 0)
+		testutils.AssertEqual(t, len(foundCategories), 0)
 	})
 }
 
@@ -61,19 +62,120 @@ func TestExpenseCategoryRepo_CreateOne(t *testing.T) {
 		priority := 0
 		createdBy := user.ID
 
-		err = expenseCategoryRepo.CreateOne(ctx, name, status, priority, vaultID, createdBy)
+		categoryID, err := expenseCategoryRepo.CreateOne(ctx, name, status, priority, vaultID, createdBy)
 		testutils.AssertNoError(t, err)
 
-		foundVaults, err := expenseCategoryRepo.FindAll(ctx, vaultID)
+		category, err := expenseCategoryRepo.FindOneByID(ctx, categoryID)
 		testutils.AssertNoError(t, err)
-		testutils.AssertEqual(t, len(foundVaults), 1)
 
-		vault := foundVaults[0]
+		testutils.AssertEqual(t, category.Name, name)
+		testutils.AssertEqual(t, category.Status, status)
+		testutils.AssertEqual(t, category.Priority, priority)
+		testutils.AssertEqual(t, category.VaultID, vaultID)
+		testutils.AssertEqual(t, category.CreatedBy, createdBy)
+	})
+}
 
-		testutils.AssertEqual(t, vault.Name, name)
-		testutils.AssertEqual(t, vault.Status, status)
-		testutils.AssertEqual(t, vault.Priority, priority)
-		testutils.AssertEqual(t, vault.VaultID, vaultID)
-		testutils.AssertEqual(t, vault.CreatedBy, createdBy)
+func TestExpenseCategoryRepo_FindOneByID(t *testing.T) {
+	t.Parallel()
+
+	t.Run("finds expense category by ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
+		user := testutils.CreateTestUser(t, db)
+
+		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
+		testutils.AssertNoError(t, err)
+
+		name := "category name"
+		status := models.ExpenseCategoryStatusActive
+		priority := 0
+		createdBy := user.ID
+
+		categoryID, err := expenseCategoryRepo.CreateOne(ctx, name, status, priority, vaultID, createdBy)
+		testutils.AssertNoError(t, err)
+
+		foundCategory, err := expenseCategoryRepo.FindOneByID(ctx, categoryID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, foundCategory.Name, name)
+		testutils.AssertEqual(t, foundCategory.Status, status)
+		testutils.AssertEqual(t, foundCategory.Priority, priority)
+		testutils.AssertEqual(t, foundCategory.VaultID, vaultID)
+		testutils.AssertEqual(t, foundCategory.CreatedBy, createdBy)
+	})
+
+	t.Run("returns error if category is not found", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
+
+		_, err := expenseCategoryRepo.FindOneByID(ctx, uuid.New().String())
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+		want := repositories.ErrExpenseCategoryNotFound
+		if !errors.Is(err, want) {
+			t.Errorf("expected error %q, got %v", want, err)
+		}
+	})
+}
+
+func TestExpenseCategoryRepo_SetStatus(t *testing.T) {
+	t.Parallel()
+
+	t.Run("sets expense category status", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
+		user := testutils.CreateTestUser(t, db)
+
+		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
+		testutils.AssertNoError(t, err)
+
+		name := "category name"
+		prevStatus := models.ExpenseCategoryStatusActive
+
+		categoryID, err := expenseCategoryRepo.CreateOne(ctx, name, prevStatus, 0, vaultID, user.ID)
+		testutils.AssertNoError(t, err)
+
+		newStatus := models.ExpenseCategoryStatusInactive
+		err = expenseCategoryRepo.SetStatus(ctx, categoryID, newStatus)
+		testutils.AssertNoError(t, err)
+
+		category, err := expenseCategoryRepo.FindOneByID(ctx, categoryID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, category.Status, newStatus)
+	})
+}
+
+func TestExpenseCategoryRepo_SetPriority(t *testing.T) {
+	t.Parallel()
+
+	t.Run("sets expense category priority", func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
+		user := testutils.CreateTestUser(t, db)
+
+		vaultID, err := repositories.NewVaultRepo(db).CreateOne(ctx, user.ID, models.VaultRoleOwner, "vault name")
+		testutils.AssertNoError(t, err)
+
+		name := "category name"
+
+		categoryID, err := expenseCategoryRepo.CreateOne(ctx, name, models.ExpenseCategoryStatusActive, 0, vaultID, user.ID)
+		testutils.AssertNoError(t, err)
+
+		newPriority := 1
+		err = expenseCategoryRepo.SetPriority(ctx, categoryID, newPriority)
+		testutils.AssertNoError(t, err)
+
+		category, err := expenseCategoryRepo.FindOneByID(ctx, categoryID)
+		testutils.AssertNoError(t, err)
+		testutils.AssertEqual(t, category.Priority, newPriority)
 	})
 }

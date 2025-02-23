@@ -28,9 +28,10 @@ func NewApplication(
 	userService := services.NewUserService(userRepo)
 	vaultRepo := repositories.NewVaultRepo(db)
 	vaultService := services.NewVaultService(vaultRepo, userService)
+	expenseCategoryRepo := repositories.NewExpenseCategoryRepo(db)
+	expenseCategoryService := services.NewExpenseCategoryService(expenseCategoryRepo, vaultService)
 
-	mux := handlers.SetupRoutes(config, logger, userService, vaultService)
-
+	mux := handlers.SetupRoutes(config, logger, userService, vaultService, expenseCategoryService)
 	app.Handler = middleware.LogHTTP(logger, mux)
 
 	return app

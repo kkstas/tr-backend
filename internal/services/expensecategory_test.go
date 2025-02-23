@@ -18,17 +18,9 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
-		vaultService := testutils.NewTestVaultService(db)
+		_, user, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 
-		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, user.ID, "vault name")
-		testutils.AssertNoError(t, err)
-
-		vaults, err := vaultService.FindAll(ctx, user.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vaults[0].ID)
+		err := expenseCategoryService.CreateOne(ctx, "category name", user.ID, vault.ID)
 		if err != nil {
 			t.Errorf("didn't expect an error, but got one: %v", err)
 		}
@@ -39,18 +31,11 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
-		vaultService := testutils.NewTestVaultService(db)
 
-		vaultOwner := testutils.CreateTestUser(t, db)
+		_, _, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
-		testutils.AssertNoError(t, err)
 
-		vaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vaults[0].ID)
+		err := expenseCategoryService.CreateOne(ctx, "category name", user.ID, vault.ID)
 		if err == nil {
 			t.Error("expected an error but didn't get one")
 		}
@@ -63,19 +48,13 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
 		vaultService := testutils.NewTestVaultService(db)
 
-		vaultOwner := testutils.CreateTestUser(t, db)
+		_, vaultOwner, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
+
+		err := vaultService.AddUser(ctx, vaultOwner.ID, user.ID, vault.ID, models.VaultRoleEditor)
 		testutils.AssertNoError(t, err)
 
-		vaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = vaultService.AddUser(ctx, vaultOwner.ID, user.ID, vaults[0].ID, models.VaultRoleEditor)
-		testutils.AssertNoError(t, err)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vaults[0].ID)
+		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vault.ID)
 		if err == nil {
 			t.Error("expected an error but didn't get one")
 		}
@@ -90,20 +69,12 @@ func TestExpenseCategoryService_CreateOne(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
-		vaultService := testutils.NewTestVaultService(db)
+		_, user, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 
-		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, user.ID, "vault name")
+		err := expenseCategoryService.CreateOne(ctx, "category name", user.ID, vault.ID)
 		testutils.AssertNoError(t, err)
 
-		vaults, err := vaultService.FindAll(ctx, user.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vaults[0].ID)
-		testutils.AssertNoError(t, err)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vaults[0].ID)
+		err = expenseCategoryService.CreateOne(ctx, "category name", user.ID, vault.ID)
 
 		if err == nil {
 			t.Error("expected an error but didn't get one")
@@ -124,29 +95,21 @@ func TestExpenseCategoryService_FindAll(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
-		vaultService := testutils.NewTestVaultService(db)
+		_, user, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 
-		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, user.ID, "vault name")
+		err := expenseCategoryService.CreateOne(ctx, "category one", user.ID, vault.ID)
+		testutils.AssertNoError(t, err)
+		err = expenseCategoryService.CreateOne(ctx, "category two", user.ID, vault.ID)
 		testutils.AssertNoError(t, err)
 
-		vaults, err := vaultService.FindAll(ctx, user.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = expenseCategoryService.CreateOne(ctx, "category one", user.ID, vaults[0].ID)
-		testutils.AssertNoError(t, err)
-		err = expenseCategoryService.CreateOne(ctx, "category two", user.ID, vaults[0].ID)
-		testutils.AssertNoError(t, err)
-
-		foundCategories, err := expenseCategoryService.FindAll(ctx, user.ID, vaults[0].ID)
+		foundCategories, err := expenseCategoryService.FindAll(ctx, user.ID, vault.ID)
 		testutils.AssertNoError(t, err)
 
 		testutils.AssertEqual(t, len(foundCategories), 2)
 
 		for _, category := range foundCategories {
 			testutils.AssertEqual(t, category.CreatedBy, user.ID)
-			testutils.AssertEqual(t, category.VaultID, vaults[0].ID)
+			testutils.AssertEqual(t, category.VaultID, vault.ID)
 			testutils.AssertEqual(t, category.Status, models.ExpenseCategoryStatusActive)
 			testutils.AssertEqual(t, category.Priority, 0)
 		}
@@ -157,21 +120,14 @@ func TestExpenseCategoryService_FindAll(t *testing.T) {
 		ctx := context.Background()
 		db := testutils.OpenTestDB(t, ctx)
 		expenseCategoryService := testutils.NewTestExpenseCategoryService(db)
-		vaultService := testutils.NewTestVaultService(db)
 
-		vaultOwner := testutils.CreateTestUser(t, db)
+		_, vaultOwner, vault := testutils.CreateTestUserWithTokenAndVault(t, db)
 		user := testutils.CreateTestUser(t, db)
-		err := vaultService.CreateOne(ctx, vaultOwner.ID, "vault name")
+
+		err := expenseCategoryService.CreateOne(ctx, "category name", vaultOwner.ID, vault.ID)
 		testutils.AssertNoError(t, err)
 
-		vaults, err := vaultService.FindAll(ctx, vaultOwner.ID)
-		testutils.AssertNoError(t, err)
-		testutils.AssertNotEmpty(t, vaults)
-
-		err = expenseCategoryService.CreateOne(ctx, "category name", vaultOwner.ID, vaults[0].ID)
-		testutils.AssertNoError(t, err)
-
-		_, err = expenseCategoryService.FindAll(ctx, user.ID, vaults[0].ID)
+		_, err = expenseCategoryService.FindAll(ctx, user.ID, vault.ID)
 		if err == nil {
 			t.Error("expected an error but didn't get one")
 		}

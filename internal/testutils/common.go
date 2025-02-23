@@ -98,6 +98,21 @@ func CreateTestUserWithToken(t testing.TB, db *sql.DB) (token string, user *mode
 	return tkn.Token, createdUser
 }
 
+func CreateTestUserWithTokenAndVault(t testing.TB, db *sql.DB) (token string, user *models.User, vault *models.UserVaultWithRole) {
+	token, user = CreateTestUserWithToken(t, db)
+	vault = createTestVault(t, db, user.ID)
+	return token, user, vault
+}
+
+func createTestVault(t testing.TB, db *sql.DB, userID string) *models.UserVaultWithRole {
+	vaultRepo := repositories.NewVaultRepo(db)
+	vaultID, err := vaultRepo.CreateOne(t.Context(), userID, models.VaultRoleOwner, "vaultName_"+RandomString(8))
+	AssertNoError(t, err)
+	vault, err := vaultRepo.FindOneByID(t.Context(), userID, vaultID)
+	AssertNoError(t, err)
+	return vault
+}
+
 func RandomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, length)

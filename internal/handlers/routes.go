@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/kkstas/tr-backend/internal/config"
+	"github.com/kkstas/tr-backend/internal/handlers/expensecategory"
 	"github.com/kkstas/tr-backend/internal/handlers/misc"
 	"github.com/kkstas/tr-backend/internal/handlers/session"
 	"github.com/kkstas/tr-backend/internal/handlers/user"
@@ -18,6 +19,7 @@ func SetupRoutes(
 	logger *slog.Logger,
 	userService *services.UserService,
 	vaultService *services.VaultService,
+	expenseCategoryService *services.ExpenseCategoryService,
 ) http.Handler {
 	mux := http.NewServeMux()
 
@@ -36,6 +38,8 @@ func SetupRoutes(
 	mux.Handle("GET /vaults", requireAuth(withUser(vault.FindAll(vaultService))))
 	mux.Handle("DELETE /vaults/{id}", requireAuth(withUser(vault.DeleteOneByID(logger, vaultService))))
 	mux.Handle("POST /vaults/{vaultID}/users", requireAuth(withUser(vault.AddUser(vaultService))))
+
+	mux.Handle("POST /expensecategories", requireAuth(withUser(expensecategory.CreateOne(expenseCategoryService))))
 
 	return mux
 }

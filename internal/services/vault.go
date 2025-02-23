@@ -12,6 +12,7 @@ import (
 var ErrVaultNotFound = errors.New("vault not found")
 var ErrInsufficientVaultPermissions = errors.New("insufficient permissions to perform this vault operation")
 var ErrUserAlreadyAssignedToVault = errors.New("user is already assigned to this vault")
+var ErrVaultWithThatNameAlreadyExists = errors.New("vault with that name already exists")
 
 type VaultService struct {
 	vaultRepo   *repositories.VaultRepo
@@ -26,6 +27,14 @@ func (s *VaultService) CreateOne(ctx context.Context, userID, vaultName string) 
 	user, err := s.userService.FindOneByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to find user %s before creating vault: %w", userID, err)
+	}
+
+	_, err = s.vaultRepo.FindOneByName(ctx, user.ID, vaultName)
+	if err == nil {
+		return ErrVaultWithThatNameAlreadyExists
+	}
+	if !errors.Is(err, repositories.ErrVaultNotFound) {
+		return fmt.Errorf("failed to find vault by name %q for user %q before creating one: %w", vaultName, user.ID, err)
 	}
 
 	vaultID, err := s.vaultRepo.CreateOne(ctx, userID, models.VaultRoleOwner, vaultName)

@@ -90,6 +90,30 @@ func TestVaultService_CreateOne(t *testing.T) {
 			t.Errorf("expected new vault ID to be assigned as user's active vault, got %s", newUserData.ActiveVault)
 		}
 	})
+
+	t.Run("returns error if vault with given name already exists", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		db := testutils.OpenTestDB(t, ctx)
+		vaultService := testutils.NewTestVaultService(db)
+		_, createdUser := testutils.CreateUserWithToken(t, db)
+
+		vaultName := "some vault"
+
+		err := vaultService.CreateOne(ctx, createdUser.ID, vaultName)
+		testutils.AssertNoError(t, err)
+
+		err = vaultService.CreateOne(ctx, createdUser.ID, vaultName)
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+
+		want := services.ErrVaultWithThatNameAlreadyExists
+		if !errors.Is(err, want) {
+			t.Errorf("expected error %q, got %v", want, err)
+		}
+	})
 }
 
 func TestVaultService_DeleteOneByID(t *testing.T) {

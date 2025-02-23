@@ -97,6 +97,25 @@ func (r *VaultRepo) FindOneByID(ctx context.Context, userID, vaultID string) (*m
 	return &v, nil
 }
 
+func (r *VaultRepo) FindOneByName(ctx context.Context, userID, vaultName string) (*models.UserVaultWithRole, error) {
+	v := models.UserVaultWithRole{} // nolint: exhaustruct
+
+	err := r.db.QueryRowContext(ctx, `
+		SELECT v.id, v.name, uv.role FROM vaults v
+		JOIN user_vaults uv ON uv.vault_id = v.id
+		WHERE v.name = $1 AND uv.user_id = $2
+		`, vaultName, userID).Scan(&v.ID, &v.Name, &v.UserRole)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrVaultNotFound
+		}
+
+		return nil, err
+	}
+
+	return &v, nil
+}
+
 func (r *VaultRepo) DeleteOneByID(ctx context.Context, vaultID string) error {
 	_, err := r.db.ExecContext(ctx, `DELETE FROM vaults WHERE vaults.id = $1`, vaultID)
 	return err
